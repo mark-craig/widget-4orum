@@ -9,20 +9,43 @@ class App extends Component {
     super(props);
     // Set our beginning state to be our initial data
     this.state = {
-      comments: []
+      replies: {},
+      root_comments: []
     }
     this.update = this.update.bind(this);
+    this.handleData = this.handleData.bind(this);
+    this.getRepliesForComment = this.getRepliesForComment.bind(this);
     this.api_url = "https://comments-4orum.herokuapp.com/api2/v1/"
   }
 
-  /*Given a url to our api, update state with new data*/
+  /* Given some comment data, sort it into replies and root comments, */
+  handleData(data) {
+    if (data.comments) {
+      // We have been given a list of comments for a post
+      data.comments.map(comment => {
+        if (comment.parent_id == null) {
+          // add this comment to the root comments just below the post
+          this.setState({root_comments: this.state.root_comments.concat(comment)});
+        } else {
+          // add this comment to the list of replies for another comment
+          const n_replies = this.state.replies;
+          if (!n_replies[comment.parent_id]) {
+            n_replies[comment.parent_id] = [comment];
+          } else {
+            n_replies[comment.parent_id].push(comment);
+          }
+          this.forceUpdate();
+        }})
+    }
+  }
+
   /*Given a url to our api, update state with new data*/
   update(route) {
     fetch(this.api_url + route)
     .then(results => {
       return results.json();
     }).then(data => {
-      this.setState({comments: data.comments});
+      this.handleData(data);
     })
   }
 
@@ -32,12 +55,24 @@ class App extends Component {
     this.update("post/2/");
   }
 
+  getRepliesForComment(comment_id) {
+    if (this.state.replies[comment_id]) {
+      return this.state.replies[comment_id];
+    } else {
+      return [];
+    }
+  }
+
   render() {
     return (
       <div className="App">
       <div className="pure-g">
       <div className="pure-u-1">
-      <CommentList comments={this.state.comments} updateRoot={this.update}/>
+      <CommentList
+        comments={this.state.root_comments}
+        getReplies={this.getRepliesForComment}
+        depth={0}
+        />
       </div>
       </div>
       </div>
@@ -58,8 +93,8 @@ function CommentList(props) {
       text={comment.text}
       id={comment.id}
       key={comment.id}
-      replies={comment.replies}
-      updateRoot={props.updateRoot}
+      getReplies={props.getReplies}
+      depth={props.depth + 1}
       />
   </li>
 );
@@ -73,8 +108,30 @@ Comment has the following fields:
 author, thought, text, id
 */
 class Comment extends Component {
+  replyThread() {
+    const replies = this.props.getReplies(this.props.id);
+    if (replies) {
+      if (this.props.depth < 4) {
+        return (
+          <CommentList
+            comments={replies}
+            getReplies={this.props.getReplies}
+            depth={this.props.depth}
+            />
+        );
+      } else {
+        return (
+          <div className="continue-thread">
+          <a href="">Continue this thread -> </a>
+          </div>
+        )
+      }
+    }
+  }
+
   render() {
     return (
+      <div className="comment-group">
       <div className="comment">
       <div className="comment-header">
       <h3>
@@ -86,13 +143,11 @@ class Comment extends Component {
       </div>
       <div className="comment-footer">
       <Button
-      label={"Responses"}
-      onClick={() => this.props.updateRoot('comments/'+this.props.id)}
-      />
-      <Button
-      label={"Reply"}
+        label={"Reply"}
       />
       </div>
+      </div>
+      {this.replyThread()}
       </div>
     );
   }
@@ -103,7 +158,7 @@ Button takes in a label, and a function that corresponds to onClick.
 */
 function Button(props) {
   return (
-    <button type="button" className="pure-button" onClick={props.onClick}>
+    <button type="button" style={props.style} className="pure-button" onClick={props.onClick}>
     {props.label}
     </button>
   )

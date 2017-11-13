@@ -47,6 +47,15 @@ a.reference {
   margin-left: 5em;
 }
 
+.continue-thread {
+  height: 1em;
+  margin-right: 1em;
+}
+
+.continue-thread a {
+  float: right;
+}
+
 /*
  * -- MENU STYLES --
  * I want to customize how my .pure-menu looks at the top of the page
