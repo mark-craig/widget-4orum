@@ -15,6 +15,7 @@ class App extends Component {
     this.update = this.update.bind(this);
     this.handleData = this.handleData.bind(this);
     this.getRepliesForComment = this.getRepliesForComment.bind(this);
+    this.renderHeader = this.renderHeader.bind(this);
     this.api_url = "https://comments-4orum.herokuapp.com/api2/v1/"
   }
 
@@ -63,9 +64,21 @@ class App extends Component {
     }
   }
 
+  renderHeader() {
+    return (
+      <div class="pure-menu pure-menu-horizontal">
+      <a href="#" class="pure-menu-heading pure-menu-link">4orum</a>
+      <ul class="pure-menu-list">
+        <li class="pure-menu-item"><a href="#" class="pure-menu-link">About</a></li>
+      </ul>
+      </div>
+    )
+  }
+
   render() {
     return (
       <div className="App">
+      {this.renderHeader()}
       <div className="pure-g">
       <div className="pure-u-1">
       <CommentList
