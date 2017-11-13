@@ -12,28 +12,24 @@ class App extends Component {
       comments: []
     }
     this.update = this.update.bind(this);
-    this.api_url = "https://comments-4orum.herokuapp.com/"
+    this.api_url = "https://comments-4orum.herokuapp.com/api2/v1/"
   }
 
   /*Given a url to our api, update state with new data*/
+  /*Given a url to our api, update state with new data*/
   update(route) {
     fetch(this.api_url + route)
-    .then((response) => {
-      return response.json()
-    }).then((json) => {
-      console.log('parsed json', json);
-      json.root_comments
-      ? this.setState({'comments' : json.root_comments})
-      : this.setState({'comments' : [json]})
-    }).catch((ex) => {
-      console.log('parsing failed', ex)
+    .then(results => {
+      return results.json();
+    }).then(data => {
+      this.setState({comments: data.comments});
     })
   }
 
   /*When our component mounts onto the DOM, get data from our server */
   componentDidMount() {
     console.log("component mounted");
-    this.update("posts/1/?format=json");
+    this.update("post/2/");
   }
 
   render() {
@@ -41,41 +37,36 @@ class App extends Component {
       <div className="App">
       <div className="pure-g">
       <div className="pure-u-1">
-      <CommentThread
-      comments = {this.state.comments}
-      updateRoot = {(route) => this.update(route)}
-      />
+      <CommentList comments={this.state.comments} updateRoot={this.update}/>
       </div>
       </div>
       </div>
-    )
+    );
   }
 }
 
-function CommentThread(props) {
+function CommentList(props) {
+  let comments = [];
+  if (props.comments) {
+    comments = props.comments;
+  }
+  const listItems = comments.map((comment) =>
+  <li key={comment.id}>
+    <Comment
+      author={comment.author}
+      sentiment={comment.sentiment}
+      text={comment.text}
+      id={comment.id}
+      key={comment.id}
+      replies={comment.replies}
+      updateRoot={props.updateRoot}
+      />
+  </li>
+);
   return (
-    props.comments.map((comment) =>
-        <div className="comment-thread">
-        <Comment
-        author={comment.author}
-        sentiment={comment.sentiment}
-        text={comment.text}
-        id={comment.id}
-        key={comment.id}
-        replies={comment.replies}
-        updateRoot={props.updateRoot}
-        />
-        <div className="replies">
-        <CommentThread
-          comments={comment.replies}
-          updateRoot={props.updateRoot}
-        />
-        </div>
-        </div>
-        )
-      )
+    <ul>{listItems}</ul>
+  );
 }
-
 
 /*
 Comment has the following fields:
@@ -96,7 +87,7 @@ class Comment extends Component {
       <div className="comment-footer">
       <Button
       label={"Responses"}
-      onClick={() => this.props.updateRoot('comments/'+this.props.id+'/?format=json')}
+      onClick={() => this.props.updateRoot('comments/'+this.props.id)}
       />
       <Button
       label={"Reply"}
