@@ -1,11 +1,26 @@
 import React, { Component } from 'react';
 import Modal from 'react-modal';
+import PieChart from 'react-chartjs-2';
 import ReplyForm from './ReplyForm.js';
 import logo from './logo.svg';
 import './pure-min.css';
 import './grids-responsive-min.css';
 import './4orum.css'
 import 'whatwg-fetch'
+
+const sentiments = ["True", "Interesting", "Funny", "Controversial",
+  "Offensive", "Untrue", "Confusing", "Awesome"]
+
+const sentiments_colors = {
+  "True" : 'rgba(0, 255, 0, 1)',
+  "Interesting" : 'rgba(246, 246, 22, 1)',
+  "Funny" : 'rgba(255, 0, 255, 1)',
+  "Controversial" : 'rgba(255, 128, 0, 1)',
+  "Offensive" : 'rgba(255, 0, 0, 1)',
+  "Untrue" : 'rgba(0, 0, 255, 1)',
+  "Confusing" : 'rgba(127, 0, 255, 1)',
+  "Awesome" : 'rgba(212, 175, 55, 1)'
+}
 
 class App extends Component {
   constructor(props) {
@@ -75,8 +90,10 @@ class App extends Component {
         style={{float:'right'}}
         label="Close"
       />
-      <h2>Reply to this comment</h2>
-      <ReplyForm />
+      <ReplyForm
+        sentiments={sentiments}
+        sentiments_colors={sentiments_colors}
+      />
       </Modal>
     )
   }
@@ -97,10 +114,10 @@ class App extends Component {
 
   renderHeader() {
     return (
-      <div class="pure-menu pure-menu-horizontal">
-      <a href="#" class="pure-menu-heading pure-menu-link">4orum</a>
-      <ul class="pure-menu-list">
-        <li class="pure-menu-item"><a href="#" class="pure-menu-link">About</a></li>
+      <div className="pure-menu pure-menu-horizontal">
+      <a href="#" className="pure-menu-heading pure-menu-link">4orum</a>
+      <ul className="pure-menu-list">
+        <li className="pure-menu-item"><a href="#" className="pure-menu-link">About</a></li>
       </ul>
       </div>
     )
