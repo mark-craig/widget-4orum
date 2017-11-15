@@ -8,18 +8,18 @@ import './grids-responsive-min.css';
 import './4orum.css'
 import 'whatwg-fetch'
 
-const sentiments = ["Awesome", "Funny", "Interesting", "Controversial",
+const sentiments = ["Awesome", "Funny", "Relatable", "Controversial",
   "Offensive", "False", "Confusing", "True"]
 const sentiments_tag= ["EN", "HP", "IN", "CT", "IF", "DA", "CF", "AG"]
 
 const sentiments_colors = {
   "Awesome" : 'rgba(212, 175, 55, 1)',
-  "Funny" : 'rgba(255, 0, 255, 1)',
-  "Interesting" : 'rgba(246, 246, 22, 1)',
+  "Funny" : 'rgba(255, 255, 0, 1)',
+  "Relatable" : 'rgba(132, 132, 255, 1)',
   "Controversial" : 'rgba(255, 128, 0, 1)',
   "Offensive" : 'rgba(255, 0, 0, 1)',
   "False" : 'rgba(0, 0, 255, 1)',
-  "Confusing" : 'rgba(127, 0, 255, 1)',
+  "Confusing" : 'rgba(255, 105, 180, 1)',
   "True" : 'rgba(0, 255, 0, 1)',
 }
 
