@@ -12,7 +12,7 @@ class ReplyForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: '',
+      comment: '',
       sentiment: ''
     };
 
@@ -22,11 +22,11 @@ class ReplyForm extends React.Component {
   }
 
   handleChange(event) {
-    this.setState({value: event.target.value});
+    this.setState({comment: event.target.value});
   }
 
   handleSubmit(event) {
-    alert('A name was submitted: ' + this.state.value);
+    alert('A comment was submitted: ' + this.state.comment);
     event.preventDefault();
   }
 
@@ -52,7 +52,13 @@ class ReplyForm extends React.Component {
         if (elems[0]) {
           var sentiment = chartData.labels[elems[0]._index];
           this.setState({sentiment : sentiment});
-          console.log(sentiment);
+        }
+      },
+      tooltips: {
+        callbacks: {
+          label: (tooltipItem, data) => {
+            return chartData.labels[tooltipItem.index];
+          }
         }
       },
       responsive: true,
@@ -100,11 +106,11 @@ function SentimentHeader(props) {
   return (
     <h2>
     I think this is <strong style={{
-      backgroundColor: props.sentiment ? props.sentiments_colors[props.sentiment]: "auto",
+      backgroundColor: props.sentiment ? props.sentiments_colors[props.sentiment]: "lightgray",
       color: 'white',
       padding: '0.25em'
       }}>{props.sentiment
-      ? " " + props.sentiment
+      ? props.sentiment
       : "..."}
       </strong>
        </h2>

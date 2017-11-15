@@ -8,18 +8,19 @@ import './grids-responsive-min.css';
 import './4orum.css'
 import 'whatwg-fetch'
 
-const sentiments = ["True", "Interesting", "Funny", "Controversial",
-  "Offensive", "Untrue", "Confusing", "Awesome"]
+const sentiments = ["Awesome", "Funny", "Interesting", "Controversial",
+  "Offensive", "False", "Confusing", "True"]
+const sentiments_tag= ["EN", "HP", "IN", "CT", "IF", "DA", "CF", "AG"]
 
 const sentiments_colors = {
-  "True" : 'rgba(0, 255, 0, 1)',
-  "Interesting" : 'rgba(246, 246, 22, 1)',
+  "Awesome" : 'rgba(212, 175, 55, 1)',
   "Funny" : 'rgba(255, 0, 255, 1)',
+  "Interesting" : 'rgba(246, 246, 22, 1)',
   "Controversial" : 'rgba(255, 128, 0, 1)',
   "Offensive" : 'rgba(255, 0, 0, 1)',
-  "Untrue" : 'rgba(0, 0, 255, 1)',
+  "False" : 'rgba(0, 0, 255, 1)',
   "Confusing" : 'rgba(127, 0, 255, 1)',
-  "Awesome" : 'rgba(212, 175, 55, 1)'
+  "True" : 'rgba(0, 255, 0, 1)',
 }
 
 class App extends Component {
@@ -101,7 +102,7 @@ class App extends Component {
   /*When our component mounts onto the DOM, get data from our server */
   componentDidMount() {
     console.log("component mounted");
-    this.update("post/2/");
+    this.update("post/9/");
   }
 
   getRepliesForComment(comment_id) {
@@ -152,7 +153,7 @@ function CommentList(props) {
   <li key={comment.id}>
     <Comment
       author={comment.author}
-      sentiment={comment.sentiment}
+      tag={comment.thoughts}
       text={comment.text}
       id={comment.id}
       key={comment.id}
@@ -198,9 +199,10 @@ class Comment extends Component {
     return (
       <div className="comment-group">
       <div className="comment">
-      <div className="comment-header">
+      <div className="comment-header"
+        style={{backgroundColor: sentiments_colors[sentiments[sentiments_tag.indexOf(this.props.tag)]]}}>
       <h3>
-      <strong>{this.props.author}</strong> thinks this is {this.props.sentiment}
+      <strong>{this.props.author}</strong> thinks this is {sentiments[sentiments_tag.indexOf(this.props.tag)]}
       </h3>
       </div>
       <div className="comment-body">

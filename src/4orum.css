@@ -20,11 +20,7 @@
   border-top-left-radius: inherit;
   border-top-right-radius: inherit;
   text-align: center;
-  color: whitesmoke;
-  background-color: orange;
-}
-.comment-header strong {
-  color:white;
+  color: white;
 }
 
 /* Add some padding inside the card container */
@@ -41,10 +37,6 @@ a.reference {
   color: white;
   border-bottom: 0.02em dashed;
   font-weight: bold
-}
-
-.replies {
-  margin-left: 5em;
 }
 
 .continue-thread {
