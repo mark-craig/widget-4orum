@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
+import Modal from 'react-modal';
+import ReplyForm from './ReplyForm.js';
 import logo from './logo.svg';
 import './pure-min.css';
+import './grids-responsive-min.css';
 import './4orum.css'
 import 'whatwg-fetch'
 
@@ -10,12 +13,15 @@ class App extends Component {
     // Set our beginning state to be our initial data
     this.state = {
       replies: {},
-      root_comments: []
+      root_comments: [],
+      modalIsOpen: false
     }
     this.update = this.update.bind(this);
     this.handleData = this.handleData.bind(this);
     this.getRepliesForComment = this.getRepliesForComment.bind(this);
     this.renderHeader = this.renderHeader.bind(this);
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
     this.api_url = "https://comments-4orum.herokuapp.com/api2/v1/"
   }
 
@@ -50,6 +56,31 @@ class App extends Component {
     })
   }
 
+  /*Open or close the modal for replying to comments*/
+  openModal() {
+    this.setState({modalIsOpen: true});
+  }
+  closeModal() {
+    this.setState({modalIsOpen: false});
+  }
+  /*We render the modal regardless of whether it is visible or not*/
+  renderModal() {
+    return (
+      <Modal
+        isOpen={this.state.modalIsOpen}
+        onRequestClose={this.closeModal}
+      >
+      <Button
+        onClick={this.closeModal}
+        style={{float:'right'}}
+        label="Close"
+      />
+      <h2>Reply to this comment</h2>
+      <ReplyForm />
+      </Modal>
+    )
+  }
+
   /*When our component mounts onto the DOM, get data from our server */
   componentDidMount() {
     console.log("component mounted");
@@ -79,12 +110,14 @@ class App extends Component {
     return (
       <div className="App">
       {this.renderHeader()}
+      {this.renderModal()}
       <div className="pure-g">
       <div className="pure-u-1">
       <CommentList
         comments={this.state.root_comments}
         getReplies={this.getRepliesForComment}
         depth={0}
+        openReplyModal={this.openModal}
         />
       </div>
       </div>
@@ -108,6 +141,7 @@ function CommentList(props) {
       key={comment.id}
       getReplies={props.getReplies}
       depth={props.depth + 1}
+      openReplyModal={props.openReplyModal}
       />
   </li>
 );
@@ -130,6 +164,7 @@ class Comment extends Component {
             comments={replies}
             getReplies={this.props.getReplies}
             depth={this.props.depth}
+            openReplyModal={this.props.openReplyModal}
             />
         );
       } else {
@@ -156,6 +191,7 @@ class Comment extends Component {
       </div>
       <div className="comment-footer">
       <Button
+        onClick={this.props.openReplyModal}
         label={"Reply"}
       />
       </div>
