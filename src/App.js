@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PieChart from 'react-chartjs-2';
 import ReplyForm from './ReplyForm.js';
 import logo from './logo.svg';
 import './pure-min.css';
@@ -11,6 +10,16 @@ const sentiments = ["Awesome", "Funny", "Relatable", "Controversial",
   "Offensive", "False", "Confusing", "True"]
 const sentiments_tag= ["EN", "HP", "IN", "CT", "IF", "DA", "CF", "AG"]
 
+const sentiments_map = {
+  "Awesome": "EN",
+  "Funny": "HP",
+  "Relatable": "IN",
+  "Controversial": "CT",
+  "Offensive": "IF",
+  "False": "DA",
+  "Confusing": "CF",
+  "True": "AG"
+}
 const sentiments_colors = {
   "Awesome" : 'rgba(212, 175, 55, 1)',
   "Funny" : 'rgba(255, 255, 0, 1)',
@@ -29,9 +38,12 @@ class App extends Component {
     this.state = {
       replies: {},
       root_comments: [],
-      replyFormIsOpen: false
+      replyFormIsOpen: false,
+      replyingToID: -1,
+      post_id: 4
     }
     this.update = this.update.bind(this);
+    this.submitComment = this.submitComment.bind(this);
     this.handleData = this.handleData.bind(this);
     this.getRepliesForComment = this.getRepliesForComment.bind(this);
     this.renderHeader = this.renderHeader.bind(this);
@@ -42,6 +54,7 @@ class App extends Component {
 
   /* Given some comment data, sort it into replies and root comments, */
   handleData(data) {
+    this.setState({root_comments: [], replies: {}});
     if (data.comments) {
       // We have been given a list of comments for a post
       data.comments.map(comment => {
@@ -61,7 +74,7 @@ class App extends Component {
     }
   }
 
-  /*Given a url to our api, update state with new data*/
+  /*Given a route in our api, update state with new data*/
   update(route) {
     fetch(this.api_url + route)
     .then(results => {
@@ -71,19 +84,36 @@ class App extends Component {
     })
   }
 
+  /*Submit a comment*/
+  submitComment(data) {
+    fetch('http://4orum.org/api2/v1/comment/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa('authenticated_user:kangaroos'),
+      },
+      body: JSON.stringify(data)
+    }).then(results => {
+      console.log(results);
+      return results.blob();
+    }).then(data => {
+      this.update('post/'+this.state.post_id+'/')
+    })
+  }
+
   /*Open or close the replyForm for replying to comments*/
-  openReplyForm() {
-    this.setState({replyFormIsOpen: true});
+  openReplyForm(id) {
+    this.setState({replyFormIsOpen: true, replyingToID: id});
   }
   closeReplyForm() {
-    this.setState({replyFormIsOpen: false});
+    this.setState({replyFormIsOpen: false, replyingToID: -1});
   }
 
 
   /*When our component mounts onto the DOM, get data from our server */
   componentDidMount() {
     console.log("component mounted");
-    this.update("post/6/");
+    this.update("post/"+this.state.post_id+"/");
   }
 
   getRepliesForComment(comment_id) {
@@ -99,7 +129,9 @@ class App extends Component {
       <div className="pure-menu pure-menu-horizontal">
       <a href="#" className="pure-menu-heading pure-menu-link">4orum</a>
       <ul className="pure-menu-list">
-        <li className="pure-menu-item"><a href="#" className="pure-menu-link">About</a></li>
+        <li className="pure-menu-item">
+          <a href="#" className="pure-menu-link">About</a>
+        </li>
       </ul>
       </div>
     )
@@ -122,6 +154,12 @@ class App extends Component {
         <ReplyForm
           sentiments={sentiments}
           sentiments_colors={sentiments_colors}
+          sentiments_map={sentiments_map}
+          postReply={this.submit}
+          parent_id={this.state.replyingToID}
+          post_id={this.state.post_id}
+          close={this.closeReplyForm}
+          submit={this.submitComment}
         />
         </div>
         : <CommentList
@@ -158,7 +196,9 @@ function CommentList(props) {
   </li>
 );
   return (
-    <ul>{listItems}</ul>
+    <ul style={props.depth==0 ? {paddingLeft:'0px'} : {paddingLeft:'2em'}}>
+      {listItems}
+    </ul>
   );
 }
 
@@ -204,7 +244,7 @@ class Comment extends Component {
       </div>
       <div className="comment-footer">
       <Button
-        onClick={this.props.openReplyForm}
+        onClick={()=>this.props.openReplyForm(this.props.id)}
         label={"Reply"}
       />
       </div>
