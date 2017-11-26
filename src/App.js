@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Modal from 'react-modal';
 import PieChart from 'react-chartjs-2';
 import ReplyForm from './ReplyForm.js';
 import logo from './logo.svg';
@@ -30,14 +29,14 @@ class App extends Component {
     this.state = {
       replies: {},
       root_comments: [],
-      modalIsOpen: false
+      replyFormIsOpen: false
     }
     this.update = this.update.bind(this);
     this.handleData = this.handleData.bind(this);
     this.getRepliesForComment = this.getRepliesForComment.bind(this);
     this.renderHeader = this.renderHeader.bind(this);
-    this.openModal = this.openModal.bind(this);
-    this.closeModal = this.closeModal.bind(this);
+    this.openReplyForm = this.openReplyForm.bind(this);
+    this.closeReplyForm = this.closeReplyForm.bind(this);
     this.api_url = "https://comments-4orum.herokuapp.com/api2/v1/"
   }
 
@@ -72,37 +71,19 @@ class App extends Component {
     })
   }
 
-  /*Open or close the modal for replying to comments*/
-  openModal() {
-    this.setState({modalIsOpen: true});
+  /*Open or close the replyForm for replying to comments*/
+  openReplyForm() {
+    this.setState({replyFormIsOpen: true});
   }
-  closeModal() {
-    this.setState({modalIsOpen: false});
+  closeReplyForm() {
+    this.setState({replyFormIsOpen: false});
   }
-  /*We render the modal regardless of whether it is visible or not*/
-  renderModal() {
-    return (
-      <Modal
-        isOpen={this.state.modalIsOpen}
-        onRequestClose={this.closeModal}
-      >
-      <Button
-        onClick={this.closeModal}
-        style={{float:'right'}}
-        label="Close"
-      />
-      <ReplyForm
-        sentiments={sentiments}
-        sentiments_colors={sentiments_colors}
-      />
-      </Modal>
-    )
-  }
+
 
   /*When our component mounts onto the DOM, get data from our server */
   componentDidMount() {
     console.log("component mounted");
-    this.update("post/9/");
+    this.update("post/6/");
   }
 
   getRepliesForComment(comment_id) {
@@ -128,15 +109,28 @@ class App extends Component {
     return (
       <div className="App">
       {this.renderHeader()}
-      {this.renderModal()}
       <div className="pure-g">
       <div className="pure-u-1">
-      <CommentList
-        comments={this.state.root_comments}
-        getReplies={this.getRepliesForComment}
-        depth={0}
-        openReplyModal={this.openModal}
+      { this.state.replyFormIsOpen
+        ?
+        <div style={{"padding":'2em'}}>
+        <Button
+          label={"Cancel"}
+          style={{'float': 'right', 'background-color':'red'}}
+          onClick={this.closeReplyForm}
         />
+        <ReplyForm
+          sentiments={sentiments}
+          sentiments_colors={sentiments_colors}
+        />
+        </div>
+        : <CommentList
+          comments={this.state.root_comments}
+          getReplies={this.getRepliesForComment}
+          depth={0}
+          openReplyForm={this.openReplyForm}
+          />
+      }
       </div>
       </div>
       </div>
@@ -159,7 +153,7 @@ function CommentList(props) {
       key={comment.id}
       getReplies={props.getReplies}
       depth={props.depth + 1}
-      openReplyModal={props.openReplyModal}
+      openReplyForm={props.openReplyForm}
       />
   </li>
 );
@@ -182,7 +176,7 @@ class Comment extends Component {
             comments={replies}
             getReplies={this.props.getReplies}
             depth={this.props.depth}
-            openReplyModal={this.props.openReplyModal}
+            openReplyForm={this.props.openReplyForm}
             />
         );
       } else {
@@ -210,7 +204,7 @@ class Comment extends Component {
       </div>
       <div className="comment-footer">
       <Button
-        onClick={this.props.openReplyModal}
+        onClick={this.props.openReplyForm}
         label={"Reply"}
       />
       </div>

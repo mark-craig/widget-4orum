@@ -63,7 +63,8 @@ class ReplyForm extends React.Component {
       },
       responsive: true,
       legend: {
-        display: false
+        display: true,
+        position: 'left'
       }
 
     }
@@ -77,7 +78,7 @@ class ReplyForm extends React.Component {
 
   render() {
     return (
-      <div>
+      <div style={{'padding':'2em'}}>
       <SentimentHeader
         sentiment={this.state.sentiment}
         sentiments_colors={this.props.sentiments_colors}
