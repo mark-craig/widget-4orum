@@ -52,8 +52,8 @@ class App extends Component {
       replies: {},
       root_comments: [],
       replyFormIsOpen: false,
-      replyingToID: -1,
-      post_id: 4
+      replyingToID: null,
+      post_id: 0
     }
     this.update = this.update.bind(this);
     this.submitComment = this.submitComment.bind(this);
@@ -63,6 +63,9 @@ class App extends Component {
     this.openReplyForm = this.openReplyForm.bind(this);
     this.closeReplyForm = this.closeReplyForm.bind(this);
     this.api_url = "https://comments-4orum.herokuapp.com/api2/v1/"
+
+    //initialize
+    this.initialize();
   }
 
   /* Given some comment data, sort it into replies and root comments, */
@@ -97,6 +100,28 @@ class App extends Component {
     })
   }
 
+  /*Get thread for the current page*/
+  initialize() {
+    let parser = document.createElement('a')
+    parser.href = window.location.href;
+    let post_url = (parser.host + parser.pathname).replace(":","");
+    let forum_url = "https://comments-4orum.herokuapp.com";
+    let forum_route = forum_url + '/api/post/';
+    let url = forum_route + post_url;
+    fetch(url).then((response) => {
+        return response.json();
+      }).then((json) => {
+        // when promise fulfilled, perform the rest of our tasks
+        let post_path = json.path
+        let post_num_string = post_path.replace(/\D/g,'');
+        let post_id = parseInt(post_num_string);
+        console.log('post_id: ' +  post_id);
+        this.setState({post_id: post_id});
+        this.update("post/"+this.state.post_id+"/");
+
+        // done
+      })
+    }
   /*Submit a comment*/
   submitComment(data) {
     fetch('http://4orum.org/api2/v1/comment/', {
@@ -119,7 +144,7 @@ class App extends Component {
     this.setState({replyFormIsOpen: true, replyingToID: id});
   }
   closeReplyForm() {
-    this.setState({replyFormIsOpen: false, replyingToID: -1});
+    this.setState({replyFormIsOpen: false, replyingToID: null});
   }
 
 
@@ -161,7 +186,7 @@ class App extends Component {
         <div style={{"padding":'2em'}}>
         <Button
           label={"Cancel"}
-          style={{'float': 'right', 'background-color':'red'}}
+          style={{'float': 'right', 'background-color':sentiments_colors[sentiments[4]], 'color':'white'}}
           onClick={this.closeReplyForm}
         />
         <ReplyForm
@@ -176,12 +201,20 @@ class App extends Component {
           submit={this.submitComment}
         />
         </div>
-        : <CommentList
+        :
+        <div style={{"padding":'2em'}}>
+        <Button
+          label={"New Comment"}
+          style={{'background-color':sentiments_colors[sentiments[7]],'color': 'white'}}
+          onClick={()=>{this.openReplyForm(null)}}
+        />
+        <CommentList
           comments={this.state.root_comments}
           getReplies={this.getRepliesForComment}
           depth={0}
           openReplyForm={this.openReplyForm}
           />
+          </div>
       }
       </div>
       </div>
