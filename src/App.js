@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import Modal from 'react-modal';
-import PieChart from 'react-chartjs-2';
 import ReplyForm from './ReplyForm.js';
 import logo from './logo.svg';
 import './pure-min.css';
@@ -8,19 +6,42 @@ import './grids-responsive-min.css';
 import './4orum.css'
 import 'whatwg-fetch'
 
-const sentiments = ["Awesome", "Funny", "Relatable", "Controversial",
+const sentiments = ["Awesome", "Funny", "Sympathetic", "Controversial",
   "Offensive", "False", "Confusing", "True"]
 const sentiments_tag= ["EN", "HP", "IN", "CT", "IF", "DA", "CF", "AG"]
 
+const sentiments_map = {
+  "Awesome": "EN",
+  "Funny": "HP",
+  "Sympathetic": "IN",
+  "Controversial": "CT",
+  "Offensive": "IF",
+  "False": "DA",
+  "Confusing": "CF",
+  "True": "AG"
+}
+
+const sentiments_expressions = {
+  "Awesome": "I think this is ",
+  "Funny": "I find this  ",
+  "Sympathetic": "This makes me feel ",
+  "Controversial": "I think this is ",
+  "Offensive": "I find this ",
+  "False": "I think this is ",
+  "Confusing": "I find this ",
+  "True": "I think this is "
+}
+
+
 const sentiments_colors = {
-  "Awesome" : 'rgba(212, 175, 55, 1)',
-  "Funny" : 'rgba(255, 255, 0, 1)',
-  "Relatable" : 'rgba(132, 132, 255, 1)',
+  "Awesome" : 'rgba(108,190,237,1)',
+  "Funny" : 'rgba(253, 229, 65, 1)',
+  "Sympathetic" : 'rgba(255,105,180, 1)',
   "Controversial" : 'rgba(255, 128, 0, 1)',
   "Offensive" : 'rgba(255, 0, 0, 1)',
-  "False" : 'rgba(0, 0, 255, 1)',
-  "Confusing" : 'rgba(255, 105, 180, 1)',
-  "True" : 'rgba(0, 255, 0, 1)',
+  "False" : 'rgba(0, 0, 200, 1)',
+  "Confusing" : 'rgba(166, 70, 98, 1)',
+  "True" : 'rgba(108,192,37, 1)',
 }
 
 class App extends Component {
@@ -30,19 +51,23 @@ class App extends Component {
     this.state = {
       replies: {},
       root_comments: [],
-      modalIsOpen: false
+      replyFormIsOpen: false,
+      replyingToID: -1,
+      post_id: 4
     }
     this.update = this.update.bind(this);
+    this.submitComment = this.submitComment.bind(this);
     this.handleData = this.handleData.bind(this);
     this.getRepliesForComment = this.getRepliesForComment.bind(this);
     this.renderHeader = this.renderHeader.bind(this);
-    this.openModal = this.openModal.bind(this);
-    this.closeModal = this.closeModal.bind(this);
+    this.openReplyForm = this.openReplyForm.bind(this);
+    this.closeReplyForm = this.closeReplyForm.bind(this);
     this.api_url = "https://comments-4orum.herokuapp.com/api2/v1/"
   }
 
   /* Given some comment data, sort it into replies and root comments, */
   handleData(data) {
+    this.setState({root_comments: [], replies: {}});
     if (data.comments) {
       // We have been given a list of comments for a post
       data.comments.map(comment => {
@@ -62,7 +87,7 @@ class App extends Component {
     }
   }
 
-  /*Given a url to our api, update state with new data*/
+  /*Given a route in our api, update state with new data*/
   update(route) {
     fetch(this.api_url + route)
     .then(results => {
@@ -72,37 +97,36 @@ class App extends Component {
     })
   }
 
-  /*Open or close the modal for replying to comments*/
-  openModal() {
-    this.setState({modalIsOpen: true});
+  /*Submit a comment*/
+  submitComment(data) {
+    fetch('http://4orum.org/api2/v1/comment/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa('authenticated_user:kangaroos'),
+      },
+      body: JSON.stringify(data)
+    }).then(results => {
+      console.log(results);
+      return results.blob();
+    }).then(data => {
+      this.update('post/'+this.state.post_id+'/')
+    })
   }
-  closeModal() {
-    this.setState({modalIsOpen: false});
+
+  /*Open or close the replyForm for replying to comments*/
+  openReplyForm(id) {
+    this.setState({replyFormIsOpen: true, replyingToID: id});
   }
-  /*We render the modal regardless of whether it is visible or not*/
-  renderModal() {
-    return (
-      <Modal
-        isOpen={this.state.modalIsOpen}
-        onRequestClose={this.closeModal}
-      >
-      <Button
-        onClick={this.closeModal}
-        style={{float:'right'}}
-        label="Close"
-      />
-      <ReplyForm
-        sentiments={sentiments}
-        sentiments_colors={sentiments_colors}
-      />
-      </Modal>
-    )
+  closeReplyForm() {
+    this.setState({replyFormIsOpen: false, replyingToID: -1});
   }
+
 
   /*When our component mounts onto the DOM, get data from our server */
   componentDidMount() {
     console.log("component mounted");
-    this.update("post/9/");
+    this.update("post/"+this.state.post_id+"/");
   }
 
   getRepliesForComment(comment_id) {
@@ -118,7 +142,9 @@ class App extends Component {
       <div className="pure-menu pure-menu-horizontal">
       <a href="#" className="pure-menu-heading pure-menu-link">4orum</a>
       <ul className="pure-menu-list">
-        <li className="pure-menu-item"><a href="#" className="pure-menu-link">About</a></li>
+        <li className="pure-menu-item">
+          <a href="#" className="pure-menu-link">About</a>
+        </li>
       </ul>
       </div>
     )
@@ -128,15 +154,35 @@ class App extends Component {
     return (
       <div className="App">
       {this.renderHeader()}
-      {this.renderModal()}
       <div className="pure-g">
       <div className="pure-u-1">
-      <CommentList
-        comments={this.state.root_comments}
-        getReplies={this.getRepliesForComment}
-        depth={0}
-        openReplyModal={this.openModal}
+      { this.state.replyFormIsOpen
+        ?
+        <div style={{"padding":'2em'}}>
+        <Button
+          label={"Cancel"}
+          style={{'float': 'right', 'background-color':'red'}}
+          onClick={this.closeReplyForm}
         />
+        <ReplyForm
+          sentiments={sentiments}
+          sentiments_colors={sentiments_colors}
+          sentiments_map={sentiments_map}
+          sentiments_expressions={sentiments_expressions}
+          postReply={this.submit}
+          parent_id={this.state.replyingToID}
+          post_id={this.state.post_id}
+          close={this.closeReplyForm}
+          submit={this.submitComment}
+        />
+        </div>
+        : <CommentList
+          comments={this.state.root_comments}
+          getReplies={this.getRepliesForComment}
+          depth={0}
+          openReplyForm={this.openReplyForm}
+          />
+      }
       </div>
       </div>
       </div>
@@ -159,12 +205,14 @@ function CommentList(props) {
       key={comment.id}
       getReplies={props.getReplies}
       depth={props.depth + 1}
-      openReplyModal={props.openReplyModal}
+      openReplyForm={props.openReplyForm}
       />
   </li>
 );
   return (
-    <ul>{listItems}</ul>
+    <ul style={props.depth==0 ? {paddingLeft:'0px'} : {paddingLeft:'2em'}}>
+      {listItems}
+    </ul>
   );
 }
 
@@ -182,7 +230,7 @@ class Comment extends Component {
             comments={replies}
             getReplies={this.props.getReplies}
             depth={this.props.depth}
-            openReplyModal={this.props.openReplyModal}
+            openReplyForm={this.props.openReplyForm}
             />
         );
       } else {
@@ -202,7 +250,7 @@ class Comment extends Component {
       <div className="comment-header"
         style={{backgroundColor: sentiments_colors[sentiments[sentiments_tag.indexOf(this.props.tag)]]}}>
       <h3>
-      <strong>{this.props.author}</strong> thinks this is {sentiments[sentiments_tag.indexOf(this.props.tag)]}
+      <strong>{this.props.author}</strong>: {sentiments_expressions[sentiments[sentiments_tag.indexOf(this.props.tag)]]} {sentiments[sentiments_tag.indexOf(this.props.tag)]}
       </h3>
       </div>
       <div className="comment-body">
@@ -210,7 +258,7 @@ class Comment extends Component {
       </div>
       <div className="comment-footer">
       <Button
-        onClick={this.props.openReplyModal}
+        onClick={()=>this.props.openReplyForm(this.props.id)}
         label={"Reply"}
       />
       </div>

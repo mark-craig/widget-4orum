@@ -6,8 +6,14 @@ import './circle-menu.css'
 
 class ReplyForm extends React.Component {
   /*
-  For its props, ReplyForm takes in a list of 8 sentiments (strings) and a
-  dictionary mapping those sentiments to colors.
+  For its props, ReplyForm takes in:
+  * sentiments: a list of 8 sentiments (strings)
+  * sentiments_colors: a dictionary mapping those sentiments to colors.
+  * sentiments_map: mapping of sentiments to their two character DB representation.
+  * sentiments_expressions: mapping of sentences corresponding to sentiments
+  * parent_id: the id of the comment that is being replied to
+  * post_id: the id of the post that the comment thread is on
+  * postReply(data): a function that will submit data to the api
   */
   constructor(props) {
     super(props);
@@ -16,18 +22,25 @@ class ReplyForm extends React.Component {
       sentiment: ''
     };
 
-    this.handleChange = this.handleChange.bind(this);
+    this.handleTextChange = this.handleTextChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.renderChart = this.renderChart.bind(this);
   }
 
-  handleChange(event) {
+  handleTextChange(event) {
     this.setState({comment: event.target.value});
   }
 
   handleSubmit(event) {
-    alert('A comment was submitted: ' + this.state.comment);
     event.preventDefault();
+    let data = {
+      'post': '/api2/v1/post/' + this.props.post_id + '/',
+      'parent_comment': '/api2/v1/comment/' + this.props.parent_id + '/',
+      'text': this.state.comment,
+      'thoughts': this.props.sentiments_map[this.state.sentiment]
+    };
+    this.props.submit(data);
+    this.props.close();
   }
 
   renderChart() {
@@ -63,9 +76,9 @@ class ReplyForm extends React.Component {
       },
       responsive: true,
       legend: {
-        display: false
+        display: true,
+        position: 'left'
       }
-
     }
     return (
       <PieChart
@@ -77,12 +90,13 @@ class ReplyForm extends React.Component {
 
   render() {
     return (
-      <div>
+      <div style={{'padding':'2em'}}>
       <SentimentHeader
         sentiment={this.state.sentiment}
         sentiments_colors={this.props.sentiments_colors}
+        sentiments_expressions={this.props.sentiments_expressions}
         />
-      <form className="pure-form pure-g" onSubmit={this.handleSubmit}>
+      <form className="pure-form pure-g">
         <div className="pure-u-1 pure-u-md-1-2">
             {this.renderChart()}
             <span className="pure-form-message" style={
@@ -91,12 +105,14 @@ class ReplyForm extends React.Component {
             </span>
           </div>
         <div className="pure-u-1 pure-u-md-1-2">
-          <textarea className="pure-input-1" style={{height: '100%'}} required/>
-          <button type="submit" value="Submit" className="save pure-button pure-input-1">
-            Submit comment
-          </button>
+          <textarea className="pure-input-1" style={{height: '100%'}} onChange={this.handleTextChange} required/>
+        <button onClick={this.handleSubmit} className="save pure-button pure-input-1">
+          Submit comment
+        </button>
         </div>
+
       </form>
+
       </div>
     );
   }
@@ -105,15 +121,18 @@ class ReplyForm extends React.Component {
 function SentimentHeader(props) {
   return (
     <h2>
-    I think this is <strong style={{
-      backgroundColor: props.sentiment ? props.sentiments_colors[props.sentiment]: "lightgray",
-      color: 'white',
-      padding: '0.25em'
-      }}>{props.sentiment
-      ? props.sentiment
-      : "..."}
+    {props.sentiment
+      ? props.sentiments_expressions[props.sentiment]
+      : "I think " }
+      <strong style={{
+        backgroundColor: props.sentiment ? props.sentiments_colors[props.sentiment]: "lightgray",
+        color: 'white',
+        padding: '0.25em'
+        }}>{props.sentiment
+            ? props.sentiment
+            : "..."}
       </strong>
-       </h2>
+    </h2>
   )
 }
 
