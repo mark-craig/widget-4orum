@@ -6,29 +6,42 @@ import './grids-responsive-min.css';
 import './4orum.css'
 import 'whatwg-fetch'
 
-const sentiments = ["Awesome", "Funny", "Relatable", "Controversial",
+const sentiments = ["Awesome", "Funny", "Sympathetic", "Controversial",
   "Offensive", "False", "Confusing", "True"]
 const sentiments_tag= ["EN", "HP", "IN", "CT", "IF", "DA", "CF", "AG"]
 
 const sentiments_map = {
   "Awesome": "EN",
   "Funny": "HP",
-  "Relatable": "IN",
+  "Sympathetic": "IN",
   "Controversial": "CT",
   "Offensive": "IF",
   "False": "DA",
   "Confusing": "CF",
   "True": "AG"
 }
+
+const sentiments_expressions = {
+  "Awesome": "I think this is ",
+  "Funny": "I find this  ",
+  "Sympathetic": "This makes me feel ",
+  "Controversial": "I think this is ",
+  "Offensive": "I find this ",
+  "False": "I think this is ",
+  "Confusing": "I find this ",
+  "True": "I think this is "
+}
+
+
 const sentiments_colors = {
-  "Awesome" : 'rgba(212, 175, 55, 1)',
-  "Funny" : 'rgba(255, 255, 0, 1)',
-  "Relatable" : 'rgba(132, 132, 255, 1)',
+  "Awesome" : 'rgba(108,190,237,1)',
+  "Funny" : 'rgba(253, 229, 65, 1)',
+  "Sympathetic" : 'rgba(255,105,180, 1)',
   "Controversial" : 'rgba(255, 128, 0, 1)',
   "Offensive" : 'rgba(255, 0, 0, 1)',
-  "False" : 'rgba(0, 0, 255, 1)',
-  "Confusing" : 'rgba(255, 105, 180, 1)',
-  "True" : 'rgba(0, 255, 0, 1)',
+  "False" : 'rgba(0, 0, 200, 1)',
+  "Confusing" : 'rgba(166, 70, 98, 1)',
+  "True" : 'rgba(108,192,37, 1)',
 }
 
 class App extends Component {
@@ -155,6 +168,7 @@ class App extends Component {
           sentiments={sentiments}
           sentiments_colors={sentiments_colors}
           sentiments_map={sentiments_map}
+          sentiments_expressions={sentiments_expressions}
           postReply={this.submit}
           parent_id={this.state.replyingToID}
           post_id={this.state.post_id}
@@ -236,7 +250,7 @@ class Comment extends Component {
       <div className="comment-header"
         style={{backgroundColor: sentiments_colors[sentiments[sentiments_tag.indexOf(this.props.tag)]]}}>
       <h3>
-      <strong>{this.props.author}</strong> thinks this is {sentiments[sentiments_tag.indexOf(this.props.tag)]}
+      <strong>{this.props.author}</strong>: {sentiments_expressions[sentiments[sentiments_tag.indexOf(this.props.tag)]]} {sentiments[sentiments_tag.indexOf(this.props.tag)]}
       </h3>
       </div>
       <div className="comment-body">

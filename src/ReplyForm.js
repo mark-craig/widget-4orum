@@ -10,6 +10,7 @@ class ReplyForm extends React.Component {
   * sentiments: a list of 8 sentiments (strings)
   * sentiments_colors: a dictionary mapping those sentiments to colors.
   * sentiments_map: mapping of sentiments to their two character DB representation.
+  * sentiments_expressions: mapping of sentences corresponding to sentiments
   * parent_id: the id of the comment that is being replied to
   * post_id: the id of the post that the comment thread is on
   * postReply(data): a function that will submit data to the api
@@ -93,6 +94,7 @@ class ReplyForm extends React.Component {
       <SentimentHeader
         sentiment={this.state.sentiment}
         sentiments_colors={this.props.sentiments_colors}
+        sentiments_expressions={this.props.sentiments_expressions}
         />
       <form className="pure-form pure-g">
         <div className="pure-u-1 pure-u-md-1-2">
@@ -119,13 +121,16 @@ class ReplyForm extends React.Component {
 function SentimentHeader(props) {
   return (
     <h2>
-    I think this is <strong style={{
-      backgroundColor: props.sentiment ? props.sentiments_colors[props.sentiment]: "lightgray",
-      color: 'white',
-      padding: '0.25em'
-      }}>{props.sentiment
-      ? props.sentiment
-      : "..."}
+    {props.sentiment
+      ? props.sentiments_expressions[props.sentiment]
+      : "I think " }
+      <strong style={{
+        backgroundColor: props.sentiment ? props.sentiments_colors[props.sentiment]: "lightgray",
+        color: 'white',
+        padding: '0.25em'
+        }}>{props.sentiment
+            ? props.sentiment
+            : "..."}
       </strong>
     </h2>
   )
