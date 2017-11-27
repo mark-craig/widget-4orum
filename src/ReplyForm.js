@@ -35,10 +35,13 @@ class ReplyForm extends React.Component {
     event.preventDefault();
     let data = {
       'post': '/api2/v1/post/' + this.props.post_id + '/',
-      'parent_comment': '/api2/v1/comment/' + this.props.parent_id + '/',
       'text': this.state.comment,
       'thoughts': this.props.sentiments_map[this.state.sentiment]
     };
+    if (this.props.parent_id) {
+      data['parent_comment'] = '/api2/v1/comment/' + this.props.parent_id + '/';
+    }
+
     this.props.submit(data);
     this.props.close();
   }
