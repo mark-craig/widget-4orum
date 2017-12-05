@@ -94,9 +94,12 @@ class App extends Component {
   update(route) {
     fetch(this.api_url + route)
     .then(results => {
-      return results.json();
-    }).then(data => {
-      this.handleData(data);
+      if (results.status == 200) {
+        return results.json();
+      }}).then(data => {
+        if(data){
+          this.handleData(data);
+        }
     })
   }
 
@@ -165,12 +168,7 @@ class App extends Component {
   renderHeader() {
     return (
       <div className="pure-menu pure-menu-horizontal">
-      <a href="#" className="pure-menu-heading pure-menu-link">4orum</a>
-      <ul className="pure-menu-list">
-        <li className="pure-menu-item">
-          <a href="#" className="pure-menu-link">About</a>
-        </li>
-      </ul>
+      <a href="http://4orum.org" className="pure-menu-heading pure-menu-link">4orum</a>
       </div>
     )
   }
@@ -179,16 +177,19 @@ class App extends Component {
     return (
       <div className="App">
       {this.renderHeader()}
-      <div className="pure-g">
-      <div className="pure-u-1">
+      <div style={{padding: "1em"}}>
       { this.state.replyFormIsOpen
         ?
-        <div style={{"padding":'2em'}}>
+        <div className="pure-g">
+        <div className="pure-u-1">
         <Button
           label={"Cancel"}
-          style={{'float': 'right', 'background-color':sentiments_colors[sentiments[4]], 'color':'white'}}
+          style={{backgroundColor:sentiments_colors[sentiments[4]]}}
+          className={"cancel-button"}
           onClick={this.closeReplyForm}
         />
+        </div>
+        <div className="pure-u-1">
         <ReplyForm
           sentiments={sentiments}
           sentiments_colors={sentiments_colors}
@@ -201,22 +202,26 @@ class App extends Component {
           submit={this.submitComment}
         />
         </div>
+        </div>
         :
-        <div style={{"padding":'2em'}}>
+        <div class="pure-g">
+        <div className="pure-u-1">
         <Button
           label={"New Comment"}
-          style={{'background-color':sentiments_colors[sentiments[7]],'color': 'white'}}
+          style={{backgroundColor:sentiments_colors[sentiments[7]],'color': 'white'}}
           onClick={()=>{this.openReplyForm(null)}}
         />
+        </div>
+        <div className="pure-u-1">
         <CommentList
           comments={this.state.root_comments}
           getReplies={this.getRepliesForComment}
           depth={0}
           openReplyForm={this.openReplyForm}
           />
-          </div>
+        </div>
+        </div>
       }
-      </div>
       </div>
       </div>
     );
@@ -269,36 +274,39 @@ class Comment extends Component {
       } else {
         return (
           <div className="continue-thread">
-          <a href="">Continue this thread -> </a>
+          <Button
+            label={"Continue this thread -->"}
+            className={"continue-thread-button"}
+            />
           </div>
-        )
+          )
+        }
       }
     }
-  }
 
   render() {
     return (
-      <div className="comment-group">
-      <div className="comment">
-      <div className="comment-header"
-        style={{backgroundColor: sentiments_colors[sentiments[sentiments_tag.indexOf(this.props.tag)]]}}>
-      <h3>
-      <strong>{this.props.author}</strong>: {sentiments_expressions[sentiments[sentiments_tag.indexOf(this.props.tag)]]} {sentiments[sentiments_tag.indexOf(this.props.tag)]}
-      </h3>
-      </div>
-      <div className="comment-body">
-      <p className="comment-text">{this.props.text}</p>
-      </div>
-      <div className="comment-footer">
-      <Button
-        onClick={()=>this.props.openReplyForm(this.props.id)}
-        label={"Reply"}
-      />
-      </div>
-      </div>
-      {this.replyThread()}
-      </div>
-    );
+        <div className="comment-group">
+        <div className="comment">
+        <div className="comment-header"
+          style={{backgroundColor: sentiments_colors[sentiments[sentiments_tag.indexOf(this.props.tag)]]}}>
+        <h3>
+        <strong>{this.props.author}</strong>: {sentiments_expressions[sentiments[sentiments_tag.indexOf(this.props.tag)]]} {sentiments[sentiments_tag.indexOf(this.props.tag)]}
+        </h3>
+        </div>
+        <div className="comment-body">
+        <p className="comment-text">{this.props.text}</p>
+        </div>
+        <div className="comment-footer">
+        <Button
+          onClick={()=>this.props.openReplyForm(this.props.id)}
+          label={"Reply"}
+        />
+        </div>
+        </div>
+        {this.replyThread()}
+        </div>
+      )
   }
 }
 
@@ -307,7 +315,7 @@ Button takes in a label, and a function that corresponds to onClick.
 */
 function Button(props) {
   return (
-    <button type="button" style={props.style} className="pure-button" onClick={props.onClick}>
+    <button type="button" style={props.style} className={"pure-button " + props.className} onClick={props.onClick}>
     {props.label}
     </button>
   )

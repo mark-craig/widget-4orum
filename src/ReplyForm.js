@@ -78,9 +78,9 @@ class ReplyForm extends React.Component {
         }
       },
       responsive: true,
+      maintainAspectRation: false,
       legend: {
-        display: true,
-        position: 'left'
+        display: false,
       }
     }
     return (
@@ -93,50 +93,45 @@ class ReplyForm extends React.Component {
 
   render() {
     return (
-      <div style={{'padding':'2em'}}>
-      <SentimentHeader
-        sentiment={this.state.sentiment}
-        sentiments_colors={this.props.sentiments_colors}
-        sentiments_expressions={this.props.sentiments_expressions}
-        />
       <form className="pure-form pure-g">
-        <div className="pure-u-1 pure-u-md-1-2">
+            <div class="pure-u-1 pure-u-md-1-2">
             {this.renderChart()}
+            </div>
+            <div class="pure-u-1 pure-u-md-1-2">
             <span className="pure-form-message" style={
               {textAlign: "center", margin: "1em"}}>
-              Select a reaction from the wheel above.
+              <SentimentHeader
+                sentiment={this.state.sentiment}
+                sentiments_colors={this.props.sentiments_colors}
+                sentiments_expressions={this.props.sentiments_expressions}
+                />
             </span>
-          </div>
-        <div className="pure-u-1 pure-u-md-1-2">
-          <textarea className="pure-input-1" style={{height: '100%'}} onChange={this.handleTextChange} required/>
-        <button onClick={this.handleSubmit} className="save pure-button pure-input-1">
-          Submit comment
-        </button>
-        </div>
-
+            <textarea className="pure-input-1" style={{height: '100%'}} onChange={this.handleTextChange} required/>
+            <button onClick={this.handleSubmit} className="save pure-button pure-input-1">
+            Submit comment
+            </button>
+            </div>
       </form>
-
-      </div>
     );
   }
 }
 
-function SentimentHeader(props) {
-  return (
-    <h2>
-    {props.sentiment
-      ? props.sentiments_expressions[props.sentiment]
-      : "I think " }
-      <strong style={{
-        backgroundColor: props.sentiment ? props.sentiments_colors[props.sentiment]: "lightgray",
-        color: 'white',
-        padding: '0.25em'
-        }}>{props.sentiment
-            ? props.sentiment
-            : "..."}
-      </strong>
-    </h2>
-  )
+class SentimentHeader extends React.Component {
+  render() {
+    return (
+      <span style={{fontSize: "larger"}}>
+      {this.props.sentiment
+        ? this.props.sentiments_expressions[this.props.sentiment]
+        : "Choose a reaction from the wheel" }
+        <strong style={{
+          color: this.props.sentiment ? this.props.sentiments_colors[this.props.sentiment]: "lightgray",
+          }}>{this.props.sentiment
+              ? this.props.sentiment
+              : "..."}
+        </strong>
+      </span>
+    )
+  }
 }
 
 export default ReplyForm;
