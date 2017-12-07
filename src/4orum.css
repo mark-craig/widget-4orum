@@ -46,6 +46,7 @@
   outline-style: solid;
   outline-width: 0.1em;
   outline-color: #E8E8E8;
+  margin-bottom: 1em;
 }
 
 a.reference {
@@ -76,11 +77,23 @@ ul {
 }
 
 .pure-button {
-  font-size: 1.15em;
-  padding: 0.2em;
-  font-weight: bold;
-  color: #404040;
-  border-radius: 0em;
+  padding: 0.25em;
+}
+
+.smaller-button {
+  font-size: 85%;
+}
+
+.larger-button {
+  font-size: 130%;
+}
+
+.alert-error {
+  position: relative;
+  margin-bottom: 1em;
+  padding: 0.5em;
+  background-color: orange;
+  color: #fff;
 }
 
 .continue-thread-button {
@@ -89,11 +102,13 @@ ul {
   font-size: 0.75em;
   background-color: gray;
   color: white;
+  margin-bottom: 1em;
 }
 
 .cancel-button {
+  background-color: rgba(255, 0, 0, 1);
   color: white;
-  float:left;
+  float:right;
 }
 
 /*
