@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReplyForm from './ReplyForm.js';
+import LoginForm from './LoginForm.js';
 import logo from './logo.svg';
 import './pure-min.css';
 import './grids-responsive-min.css';
@@ -53,15 +54,24 @@ class App extends Component {
       root_comments: [],
       replyFormIsOpen: false,
       replyingToID: null,
-      post_id: 0
+      post_id: 0,
+      loginFormIsOpen: false,
+      logged_in: false,
+      username: null,
+      password: null
     }
     this.update = this.update.bind(this);
     this.submitComment = this.submitComment.bind(this);
     this.handleData = this.handleData.bind(this);
     this.getRepliesForComment = this.getRepliesForComment.bind(this);
-    this.renderHeader = this.renderHeader.bind(this);
     this.openReplyForm = this.openReplyForm.bind(this);
     this.closeReplyForm = this.closeReplyForm.bind(this);
+    this.openLoginForm = this.openLoginForm.bind(this);
+    this.closeLoginForm = this.closeLoginForm.bind(this);
+    this.verifyLogin = this.verifyLogin.bind(this);
+    this.storeLogin = this.storeLogin.bind(this);
+    this.logout = this.logout.bind(this);
+
     this.api_url = "https://comments-4orum.herokuapp.com/api2/v1/"
 
     //initialize
@@ -131,7 +141,7 @@ class App extends Component {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + btoa('authenticated_user:kangaroos'),
+        'Authorization': 'Basic ' + btoa(this.state.username+':'+this.state.password),
       },
       body: JSON.stringify(data)
     }).then(results => {
@@ -150,6 +160,25 @@ class App extends Component {
     this.setState({replyFormIsOpen: false, replyingToID: null});
   }
 
+  /*Open or close the Login/Register from for logging users in*/
+
+  openLoginForm() {
+    this.setState({loginFormIsOpen: true});
+  }
+  closeLoginForm() {
+    this.setState({loginFormIsOpen: false});
+  }
+
+  verifyLogin(username, password) {
+    /*Implement soon*/
+    return true;
+  }
+  storeLogin(username, password) {
+    this.setState({username: username, password: password, logged_in: true});
+  }
+  logout() {
+    this.setState({username: null, password: null, logged_in: false});
+  }
 
   /*When our component mounts onto the DOM, get data from our server */
   componentDidMount() {
@@ -165,18 +194,34 @@ class App extends Component {
     }
   }
 
-  renderHeader() {
-    return (
-      <div className="pure-menu pure-menu-horizontal">
-      <a href="http://4orum.org" className="pure-menu-heading pure-menu-link">4orum</a>
-      </div>
-    )
-  }
-
   render() {
     return (
       <div className="App">
-      {this.renderHeader()}
+      <div className="pure-menu pure-menu-horizontal pure-menu-scrollable">
+      <a href="http://4orum.org" className="pure-menu-heading pure-menu-link">4orum</a>
+      {!this.state.logged_in
+        ? <ul className="pure-menu-list">
+            <li className="pure-menu-item">
+              <a href="#" onClick={(event)=>this.openLoginForm()}
+                className="pure-menu-link">Login</a>
+            </li>
+          </ul>
+          :
+          <ul className="pure-menu-list">
+           <li className="pure-menu-item pure-menu-disabled">Logged in as {this.state.username}</li>
+            <li className="pure-menu-item">
+              <a href="#" onClick={(event)=>this.logout()}
+                className="pure-menu-link">Logout</a>
+            </li>
+          </ul>
+        }
+      </div>
+      <LoginForm
+        isOpen={this.state.loginFormIsOpen}
+        close={this.closeLoginForm}
+        login={this.verifyLogin}
+        store={this.storeLogin}
+      />
       <div style={{padding: "1em"}}>
       { this.state.replyFormIsOpen
         ?
@@ -208,7 +253,7 @@ class App extends Component {
         <div className="pure-u-1">
         <Button
           label={"New Comment"}
-          style={{backgroundColor:sentiments_colors[sentiments[7]],'color': 'white'}}
+          className="pure-button-primary"
           onClick={()=>{this.openReplyForm(null)}}
         />
         </div>
@@ -299,6 +344,7 @@ class Comment extends Component {
         </div>
         <div className="comment-footer">
         <Button
+          className="larger-button"
           onClick={()=>this.props.openReplyForm(this.props.id)}
           label={"Reply"}
         />
