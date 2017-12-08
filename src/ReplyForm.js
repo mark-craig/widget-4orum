@@ -132,29 +132,30 @@ class ReplyForm extends React.Component {
               : <div/>
             }
             {this.props.parent_id
-                ? <div class="pure-u-1 pure-u-md-1-2">
+                ? <div className="pure-u-1 pure-u-md-1-2">
                   {this.renderChart()}
                   </div>
                 : <div/>
             }
-            <div class="pure-u-1 pure-u-md-1-2">
             {this.props.parent_id
-              ? <span className="pure-form-message" style={
-                {textAlign: "center", margin: "1em"}}>
+              ? <div className="pure-u-1 pure-u-md-1-2">
+                <span className="pure-form-message sentiment-message">
                 <SentimentHeader
                   sentiment={this.state.sentiment}
                   sentiments_colors={this.props.sentiments_colors}
                   sentiments_expressions={this.props.sentiments_expressions}
                   />
                   </span>
-                : <span></span>
-              }
-            <textarea className="pure-input-1" style={{height: '100%'}} onChange={this.handleTextChange} required/>
-            <button onClick={this.handleSubmit} className="save pure-button pure-input-1">
-            Submit comment
-            </button>
-            </div>
-      </form>
+                  <textarea className="pure-input-1" style={{height: '100%'}} onChange={this.handleTextChange} required/>
+                  <button onClick={this.handleSubmit} className="save pure-button pure-input-1">Submit comment</button>
+                  </div>
+                : <div className="pure-u-1">
+                  <textarea className="pure-input-1" style={{height: '100%'}} onChange={this.handleTextChange} required/>
+                  <button onClick={this.handleSubmit} className="save pure-button pure-input-1">Submit comment</button>
+                  </div>
+                }
+
+            </form>
     );
   }
 }

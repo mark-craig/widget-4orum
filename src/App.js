@@ -54,6 +54,10 @@ class App extends Component {
       root_comments: null,
       replyFormIsOpen: false,
       replyingToID: null,
+      replyingToName: null,
+      replyingToText: null,
+      replyingToSentiment: null,
+      replyingToRoot: null,
       post_id: 0,
       loginFormIsOpen: false,
       logged_in: false,
@@ -153,11 +157,21 @@ class App extends Component {
   }
 
   /*Open or close the replyForm for replying to comments*/
-  openReplyForm(id) {
-    this.setState({replyFormIsOpen: true, replyingToID: id});
+  openReplyForm(id, name, sentiment, text, hideHeader) {
+    this.setState({replyFormIsOpen: true,
+                  replyingToID: id,
+                  replyingToName: name,
+                  replyingToSentiment: sentiment,
+                  replyingToText: text,
+                  replyingToRoot: hideHeader});
   }
   closeReplyForm() {
-    this.setState({replyFormIsOpen: false, replyingToID: null});
+    this.setState({replyFormIsOpen: false,
+                  replyingToID: null,
+                  replyingToName: null,
+                  replyingToSentiment: null,
+                  replyingToText: null,
+                  replyingToRoot: null});
   }
 
   /*Open or close the Login/Register from for logging users in*/
@@ -232,9 +246,24 @@ class App extends Component {
         <Button
           label={"Cancel"}
           style={{backgroundColor:sentiments_colors[sentiments[4]]}}
-          className={"cancel-button"}
+          className={"cancel-button nav-button"}
           onClick={this.closeReplyForm}
         />
+        </div>
+        <div className="pure-u-1">
+        { this.state.replyingToID
+          ?
+          <Comment
+            author={this.state.replyingToName}
+            tag={this.state.replyingToSentiment}
+            text={this.state.replyingToText}
+            id={this.state.replyingToID}
+            key={this.state.replyingToID}
+            hideHeader={this.state.replyingToRoot}
+          />
+          :
+          <div className="blank"/>
+        }
         </div>
         <div className="pure-u-1">
         <ReplyForm
@@ -257,7 +286,7 @@ class App extends Component {
         <div className="pure-u-1">
         <Button
           label={"New Comment"}
-          className="pure-button-primary"
+          className="pure-button-primary nav-button"
           onClick={()=>{this.openReplyForm(null)}}
         />
         </div>
@@ -319,29 +348,32 @@ author, thought, text, id
 */
 class Comment extends Component {
   replyThread() {
-    const replies = this.props.getReplies(this.props.id);
-    if (replies) {
-      if (this.props.depth < 4) {
-        return (
-          <CommentList
-            comments={replies}
-            getReplies={this.props.getReplies}
-            depth={this.props.depth}
-            openReplyForm={this.props.openReplyForm}
-            />
-        );
-      } else {
-        return (
-          <div className="continue-thread">
-          <Button
-            label={"Continue this thread -->"}
-            className={"continue-thread-button pure-button-primary"}
-            />
-          </div>
-          )
+    if (this.props.openReplyForm) {
+      const replies = this.props.getReplies(this.props.id);
+      if (replies) {
+        if (this.props.depth < 4) {
+          return (
+            <CommentList
+              comments={replies}
+              getReplies={this.props.getReplies}
+              depth={this.props.depth}
+              openReplyForm={this.props.openReplyForm}
+              />
+          );
+        } else {
+          return (
+            <div className="continue-thread">
+            <Button
+              label={"Continue this thread -->"}
+              className={"continue-thread-button pure-button-primary"}
+              />
+            </div>
+            )
+          }
         }
       }
     }
+
 
   render() {
     return (
@@ -351,7 +383,7 @@ class Comment extends Component {
           ? <div className="comment-header"
               style={{backgroundColor: sentiments_colors[sentiments[sentiments_tag.indexOf(this.props.tag)]]}}>
               <h3> <strong>{this.props.author}</strong>:
-                  {sentiments_expressions[sentiments[sentiments_tag.indexOf(this.props.tag)]]}
+                  {" " + sentiments_expressions[sentiments[sentiments_tag.indexOf(this.props.tag)]]}
                   {sentiments[sentiments_tag.indexOf(this.props.tag)]}
               </h3>
             </div>
@@ -365,11 +397,19 @@ class Comment extends Component {
         <p className="comment-text">{this.props.text}</p>
         </div>
         <div className="comment-footer">
-        <Button
-          className="larger-button"
-          onClick={()=>this.props.openReplyForm(this.props.id)}
+        {this.props.openReplyForm
+        ? <Button
+            className="larger-button"
+            onClick={()=>this.props.openReplyForm(this.props.id,
+                                                  this.props.author,
+                                                  this.props.tag,
+                                                  this.props.text,
+                                                  this.props.hideHeader)}
           label={"Reply"}
         />
+        :
+        <div className="blank"/>
+      }
         </div>
         </div>
         {this.replyThread()}

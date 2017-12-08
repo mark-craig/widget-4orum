@@ -68,7 +68,7 @@ class LoginForm extends React.Component {
         isOpen={this.props.isOpen}
         style={modalStyle}
         >
-        <button className="pure-button cancel-button"
+        <button className="pure-button cancel-button nav-button"
           onClick={(event)=>this.props.close()}>Close</button>
         <form className="pure-form pure-form-stacked" onSubmit={this.handleSubmit}>
           <legend>Sign in to 4orum

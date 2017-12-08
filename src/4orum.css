@@ -131,6 +131,19 @@ ul {
   float:right;
 }
 
+.blank {
+  height:100%;
+}
+
+.sentiment-message {
+  text-align: center;
+  margin: 1em;
+}
+
+.nav-button {
+  margin-bottom: 1em;
+}
+
 /*
 * -- LARGE PHONES --
 On screens that are not extra small
