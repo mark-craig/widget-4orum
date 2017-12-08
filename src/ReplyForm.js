@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import PieChart from 'react-chartjs-2';
-import './pure-min.css';
-import './grids-responsive-min.css';
-import './circle-menu.css'
+import ReactMde, { ReactMdeCommands } from 'react-mde';
+
 
 class ReplyForm extends React.Component {
   /*
@@ -18,8 +17,8 @@ class ReplyForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      comment: '',
-      sentiment: '',
+      comment: {text: '', selection: null},
+      sentiment: null,
       error_message: null
     };
 
@@ -29,8 +28,8 @@ class ReplyForm extends React.Component {
     this.validateForm = this.validateForm.bind(this);
   }
 
-  handleTextChange(event) {
-    this.setState({comment: event.target.value});
+  handleTextChange(value) {
+    this.setState({comment: value});
   }
 
   validateForm(data) {
@@ -48,7 +47,7 @@ class ReplyForm extends React.Component {
       this.setState({error_message: "Please write a comment before submitting."});
       return false;
     }
-    if (data.parent_id && !data.thoughts) {
+    if (data.parent_comment && !data.thoughts) {
       // we need a sentiment if there is a parent comment
       this.setState({error_message: "Please choose a sentiment since you are replying to another comment"});
       return false;
@@ -64,10 +63,14 @@ class ReplyForm extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
+    let th = null;
+    if (this.state.sentiment) {
+      th = this.props.sentiments_map[this.state.sentiment];
+    }
     let data = {
       'post': '/api2/v1/post/' + this.props.post_id + '/',
-      'text': this.state.comment,
-      'thoughts': this.props.sentiments_map[this.state.sentiment]
+      'text': this.state.comment.text,
+      'thoughts': th
     };
     if (this.props.parent_id) {
       data['parent_comment'] = '/api2/v1/comment/' + this.props.parent_id + '/';
@@ -131,31 +134,36 @@ class ReplyForm extends React.Component {
               ? <div className="pure-u-1 alert-error">{this.state.error_message}</div>
               : <div/>
             }
+            <div className="pure-u-1 pure-u-md-1-2">
             {this.props.parent_id
-                ? <div className="pure-u-1 pure-u-md-1-2">
-                  {this.renderChart()}
-                  </div>
+                ? this.renderChart()
                 : <div/>
             }
             {this.props.parent_id
-              ? <div className="pure-u-1 pure-u-md-1-2">
-                <span className="pure-form-message sentiment-message">
+              ? <span className="pure-form-message sentiment-message">
                 <SentimentHeader
                   sentiment={this.state.sentiment}
                   sentiments_colors={this.props.sentiments_colors}
                   sentiments_expressions={this.props.sentiments_expressions}
                   />
                   </span>
-                  <textarea className="pure-input-1" style={{height: '100%'}} onChange={this.handleTextChange} required/>
-                  <button onClick={this.handleSubmit} className="save pure-button pure-input-1">Submit comment</button>
-                  </div>
-                : <div className="pure-u-1">
-                  <textarea className="pure-input-1" style={{height: '100%'}} onChange={this.handleTextChange} required/>
-                  <button onClick={this.handleSubmit} className="save pure-button pure-input-1">Submit comment</button>
-                  </div>
-                }
-
+              : <span/>
+              }
+              </div>
+              <div className={"pure-u-1 " +(this.props.parent_id ? "pure-u-md-1-2" : "")}>
+              <ReactMde
+              textAreaProps={{
+                  id: 'ta1',
+                  name: 'ta1',
+                }}
+                value={this.state.comment}
+                onChange={this.handleTextChange}
+                commands={ReactMdeCommands.getDefaultCommands()}
+                />
+              <button onClick={this.handleSubmit} className="save pure-button pure-input-1">Submit comment</button>
+              </div>
             </form>
+
     );
   }
 }

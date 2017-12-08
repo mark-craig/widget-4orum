@@ -4,12 +4,16 @@
   "private": true,
   "dependencies": {
     "chart.js": "^2.7.1",
+    "font-awesome": "^4.7.0",
     "react": "^16.0.0",
     "react-chartjs": "^0.8.0",
     "react-chartjs-2": "^2.6.4",
     "react-dom": "^16.0.0",
+    "react-mde": "^2.1.2",
     "react-modal": "^3.1.7",
     "react-scripts": "1.0.14",
+    "react-showdown": "^1.6.0",
+    "showdown": "^1.8.4",
     "whatwg-fetch": "^2.0.3"
   },
   "scripts": {

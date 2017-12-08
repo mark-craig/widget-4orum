@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import ReplyForm from './ReplyForm.js';
 import LoginForm from './LoginForm.js';
 import logo from './4orum.svg';
-import './pure-min.css';
-import './grids-responsive-min.css';
-import './4orum.css'
+import { Markdown } from 'react-showdown';
 import 'whatwg-fetch'
 
 const sentiments = ["Awesome", "Funny", "Sympathetic", "Controversial",
@@ -428,7 +426,7 @@ class Comment extends Component {
             </div>
         }
         <div className="comment-body">
-        <p className="comment-text">{this.props.text}</p>
+        <Markdown markup={this.props.text}/>
         </div>
         <div className="comment-footer">
         {this.props.openReplyForm
