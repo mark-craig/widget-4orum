@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import ReplyForm from './ReplyForm.js';
 import LoginForm from './LoginForm.js';
-import logo from './logo.svg';
+import logo from './4orum.svg';
+import loading from './4orum-loading.svg';
 import './pure-min.css';
 import './grids-responsive-min.css';
 import './4orum.css'
@@ -50,8 +51,8 @@ class App extends Component {
     super(props);
     // Set our beginning state to be our initial data
     this.state = {
-      replies: {},
-      root_comments: [],
+      replies: null,
+      root_comments: null,
       replyFormIsOpen: false,
       replyingToID: null,
       post_id: 0,
@@ -198,7 +199,9 @@ class App extends Component {
     return (
       <div className="App">
       <div className="pure-menu pure-menu-horizontal pure-menu-scrollable">
-      <a href="http://4orum.org" className="pure-menu-heading pure-menu-link">4orum</a>
+      <a href="http://4orum.org" className="pure-menu-heading pure-menu-link">
+        4<img className="logo" src={logo} alt="o"/>rum
+      </a>
       {!this.state.logged_in
         ? <ul className="pure-menu-list">
             <li className="pure-menu-item">
@@ -258,12 +261,16 @@ class App extends Component {
         />
         </div>
         <div className="pure-u-1">
-        <CommentList
-          comments={this.state.root_comments}
-          getReplies={this.getRepliesForComment}
-          depth={0}
-          openReplyForm={this.openReplyForm}
-          />
+        { this.state.root_comments
+          ? <CommentList
+            comments={this.state.root_comments}
+            getReplies={this.getRepliesForComment}
+            depth={0}
+            openReplyForm={this.openReplyForm}
+            />
+          : <img className="loading" src={loading}/>
+        }
+
         </div>
         </div>
       }

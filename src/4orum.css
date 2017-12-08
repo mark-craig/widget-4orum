@@ -63,6 +63,17 @@ a.reference {
   float: right;
 }
 
+.logo {
+  height:0.9em;
+}
+
+.loading {
+  width: 20%;
+  margin-left: 40%;
+  margin-right: 40%;
+  margin-top: 5%;
+}
+
 /*On small screens, labels should be hidden, icons should be twice as big*/
 .menu-label {
   visibility: hidden;
