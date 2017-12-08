@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import Modal from 'react-modal';
 import PropTypes from 'prop-types';
-import './pure-min.css';
-import './grids-responsive-min.css';
+import logo from './4orum.svg'
+
 
 class LoginForm extends React.Component {
   constructor(props) {
@@ -10,10 +10,13 @@ class LoginForm extends React.Component {
     this.state = {
       username: null,
       password: null,
-      error: false
     }
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
+  }
+
+  componentDidUpdate() {
+    this.props.logged_in && this.state.attempting_login ? this.setState({attempting_login:false}) : null;
   }
 
   handleUsernameChange(event) {
@@ -26,16 +29,9 @@ class LoginForm extends React.Component {
 
   handleSubmit = (event)=>{
     event.preventDefault();
-    if (this.props.login(this.state.username, this.state.password)){
-      this.setState({error: false});
-      this.props.store(this.state.username, this.state.password);
-      this.props.close();
-    } else {
-      this.setState({error: true});
-    }
+    this.setState({attempting_login: true});
+    this.props.login(this.state.username, this.state.password);
   }
-
-
 
   render() {
     let modalStyle = {
@@ -77,7 +73,7 @@ class LoginForm extends React.Component {
             </div>
           </legend>
 
-          { this.state.error ?
+          { this.props.log_in_failed ?
             <div className="alert-error">
               <label>Incorrect username or password</label>
             </div>
@@ -89,6 +85,7 @@ class LoginForm extends React.Component {
               onChange={this.handlePasswordChange} required/>
           <button type="submit" className="pure-button pure-button-primary pure-input-1">Sign in</button>
         </form>
+        {this.state.attempting_login && !this.props.log_in_failed ? <img className="loading" src={logo}/> : <div className="blank"/>}
       </Modal>
     )
   }

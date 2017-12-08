@@ -19,7 +19,8 @@ class ReplyForm extends React.Component {
     this.state = {
       comment: {text: '', selection: null},
       sentiment: null,
-      error_message: null
+      error_message: null,
+      attempting_login: false
     };
 
     this.handleTextChange = this.handleTextChange.bind(this);

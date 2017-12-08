@@ -60,6 +60,7 @@ class App extends Component {
       post_id: 0,
       loginFormIsOpen: false,
       logged_in: false,
+      log_in_failed: false,
       username: null,
       password: null,
       in_thread: false
@@ -127,7 +128,7 @@ class App extends Component {
     let parser = document.createElement('a')
     parser.href = window.location.href;
     let post_url = (parser.host + parser.pathname).replace(":","");
-    let forum_url = "https://comments-4orum.herokuapp.com";
+    let forum_url = "https://4orum.org";
     let forum_route = forum_url + '/api/post/';
     let url = forum_route + post_url;
     fetch(url).then((response) => {
@@ -201,15 +202,31 @@ class App extends Component {
   }
 
   verifyLogin(username, password) {
-    /*Implement soon*/
-    return true;
+    this.setState({log_in_failed: false})
+    let url = "https://4orum.org/api2/v1/loggedin/";
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Basic ' + btoa(username+':'+password),
+      },
+    }).then((response) => {
+        return response.status;
+      }).then((status) => {
+        // when promise fulfilled, perform the rest of our tasks
+        console.log(status);
+        return (status == 200 ? this.storeLogin(username, password)
+                              : this.setState({log_in_failed: true}));
+      })
   }
+
   storeLogin(username, password) {
-    this.setState({username: username, password: password, logged_in: true});
+    this.setState({username: username, password: password, loginFormIsOpen: false,
+      log_in_failed: false, logged_in: true});
   }
   logout() {
-    this.setState({username: null, password: null, logged_in: false});
+    this.setState({username: null, password: null, loginFormIsOpen: false, log_in_failed: false, logged_in:false});
   }
+
 
   /*When our component mounts onto the DOM, get data from our server */
   componentDidMount() {
@@ -221,7 +238,7 @@ class App extends Component {
     if (this.state.replies[comment_id]) {
       return this.state.replies[comment_id];
     } else {
-      return [];
+      return null;
     }
   }
 
@@ -254,6 +271,9 @@ class App extends Component {
         close={this.closeLoginForm}
         login={this.verifyLogin}
         store={this.storeLogin}
+        openLoginForm={this.openLoginForm}
+        logged_in={this.state.logged_in}
+        log_in_failed={this.state.log_in_failed}
       />
       <div style={{padding: "1em"}}>
       { this.state.replyFormIsOpen
@@ -325,7 +345,7 @@ class App extends Component {
             getReplies={this.getRepliesForComment}
             depth={0}
             openReplyForm={this.openReplyForm}
-            hideHeaders={true}
+            hideHeaders={!this.state.in_thread}
             continueThread={this.filterComments}
             />
           : <img className="loading" src={logo}/>
