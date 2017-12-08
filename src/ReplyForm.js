@@ -19,16 +19,47 @@ class ReplyForm extends React.Component {
     super(props);
     this.state = {
       comment: '',
-      sentiment: ''
+      sentiment: '',
+      error_message: null
     };
 
     this.handleTextChange = this.handleTextChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.renderChart = this.renderChart.bind(this);
+    this.validateForm = this.validateForm.bind(this);
   }
 
   handleTextChange(event) {
     this.setState({comment: event.target.value});
+  }
+
+  validateForm(data) {
+    if (!data.post) {
+      // not sure why this would be the case, but do not allow
+      this.setState({error_message: "An unknown error occurred. Please try again later."});
+      return false;
+    }
+    if (!data.text) {
+      // we need text in the comment
+      this.setState({error_message: "Please write a comment before submitting."});
+      return false;
+    } else if (data.text.trim() == "") {
+      // we need text in the comment
+      this.setState({error_message: "Please write a comment before submitting."});
+      return false;
+    }
+    if (data.parent_id && !data.thoughts) {
+      // we need a sentiment if there is a parent comment
+      this.setState({error_message: "Please choose a sentiment since you are replying to another comment"});
+      return false;
+    }
+    if (!this.props.logged_in) {
+      this.setState({error_message: "Please log in before submitting"});
+      this.props.openLoginForm();
+      return false;
+    }
+    this.setState({error_message: null});
+    return true;
   }
 
   handleSubmit(event) {
@@ -41,9 +72,11 @@ class ReplyForm extends React.Component {
     if (this.props.parent_id) {
       data['parent_comment'] = '/api2/v1/comment/' + this.props.parent_id + '/';
     }
-
-    this.props.submit(data);
-    this.props.close();
+    if (this.validateForm(data)) {
+      this.setState({error_message: null});
+      this.props.submit(data);
+      this.props.close();
+    }
   }
 
   renderChart() {
@@ -94,18 +127,28 @@ class ReplyForm extends React.Component {
   render() {
     return (
       <form className="pure-form pure-g">
+            {this.state.error_message
+              ? <div className="pure-u-1 alert-error">{this.state.error_message}</div>
+              : <div/>
+            }
+            {this.props.parent_id
+                ? <div class="pure-u-1 pure-u-md-1-2">
+                  {this.renderChart()}
+                  </div>
+                : <div/>
+            }
             <div class="pure-u-1 pure-u-md-1-2">
-            {this.renderChart()}
-            </div>
-            <div class="pure-u-1 pure-u-md-1-2">
-            <span className="pure-form-message" style={
-              {textAlign: "center", margin: "1em"}}>
-              <SentimentHeader
-                sentiment={this.state.sentiment}
-                sentiments_colors={this.props.sentiments_colors}
-                sentiments_expressions={this.props.sentiments_expressions}
-                />
-            </span>
+            {this.props.parent_id
+              ? <span className="pure-form-message" style={
+                {textAlign: "center", margin: "1em"}}>
+                <SentimentHeader
+                  sentiment={this.state.sentiment}
+                  sentiments_colors={this.props.sentiments_colors}
+                  sentiments_expressions={this.props.sentiments_expressions}
+                  />
+                  </span>
+                : <span></span>
+              }
             <textarea className="pure-input-1" style={{height: '100%'}} onChange={this.handleTextChange} required/>
             <button onClick={this.handleSubmit} className="save pure-button pure-input-1">
             Submit comment

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import ReplyForm from './ReplyForm.js';
 import LoginForm from './LoginForm.js';
 import logo from './4orum.svg';
-import loading from './4orum-loading.svg';
 import './pure-min.css';
 import './grids-responsive-min.css';
 import './4orum.css'
@@ -138,7 +137,7 @@ class App extends Component {
     }
   /*Submit a comment*/
   submitComment(data) {
-    fetch('http://4orum.org/api2/v1/comment/', {
+    fetch('https://4orum.org/api2/v1/comment/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -199,7 +198,7 @@ class App extends Component {
     return (
       <div className="App">
       <div className="pure-menu pure-menu-horizontal pure-menu-scrollable">
-      <a href="http://4orum.org" className="pure-menu-heading pure-menu-link">
+      <a href="https://4orum.org" className="pure-menu-heading pure-menu-link">
         4<img className="logo" src={logo} alt="o"/>rum
       </a>
       {!this.state.logged_in
@@ -248,6 +247,8 @@ class App extends Component {
           post_id={this.state.post_id}
           close={this.closeReplyForm}
           submit={this.submitComment}
+          openLoginForm={this.openLoginForm}
+          logged_in={this.state.logged_in}
         />
         </div>
         </div>
@@ -267,10 +268,10 @@ class App extends Component {
             getReplies={this.getRepliesForComment}
             depth={0}
             openReplyForm={this.openReplyForm}
+            hideHeaders={true}
             />
-          : <img className="loading" src={loading}/>
+          : <img className="loading" src={logo}/>
         }
-
         </div>
         </div>
       }
@@ -285,6 +286,11 @@ function CommentList(props) {
   if (props.comments) {
     comments = props.comments;
   }
+  let hideHeader=false;
+  if (props.hideHeaders) {
+    hideHeader=true;
+  }
+
   const listItems = comments.map((comment) =>
   <li key={comment.id}>
     <Comment
@@ -296,6 +302,7 @@ function CommentList(props) {
       getReplies={props.getReplies}
       depth={props.depth + 1}
       openReplyForm={props.openReplyForm}
+      hideHeader={hideHeader}
       />
   </li>
 );
@@ -328,7 +335,7 @@ class Comment extends Component {
           <div className="continue-thread">
           <Button
             label={"Continue this thread -->"}
-            className={"continue-thread-button"}
+            className={"continue-thread-button pure-button-primary"}
             />
           </div>
           )
@@ -340,12 +347,20 @@ class Comment extends Component {
     return (
         <div className="comment-group">
         <div className="comment">
-        <div className="comment-header"
-          style={{backgroundColor: sentiments_colors[sentiments[sentiments_tag.indexOf(this.props.tag)]]}}>
-        <h3>
-        <strong>{this.props.author}</strong>: {sentiments_expressions[sentiments[sentiments_tag.indexOf(this.props.tag)]]} {sentiments[sentiments_tag.indexOf(this.props.tag)]}
-        </h3>
-        </div>
+        {!this.props.hideHeader
+          ? <div className="comment-header"
+              style={{backgroundColor: sentiments_colors[sentiments[sentiments_tag.indexOf(this.props.tag)]]}}>
+              <h3> <strong>{this.props.author}</strong>:
+                  {sentiments_expressions[sentiments[sentiments_tag.indexOf(this.props.tag)]]}
+                  {sentiments[sentiments_tag.indexOf(this.props.tag)]}
+              </h3>
+            </div>
+          : <div className="comment-header no-sentiment">
+              <h3>
+                <strong>{this.props.author}</strong> says:
+              </h3>
+            </div>
+        }
         <div className="comment-body">
         <p className="comment-text">{this.props.text}</p>
         </div>
