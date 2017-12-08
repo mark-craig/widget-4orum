@@ -51,6 +51,7 @@ class App extends Component {
     // Set our beginning state to be our initial data
     this.state = {
       replies: null,
+      all_comments: null,
       root_comments: null,
       replyFormIsOpen: false,
       replyingToID: null,
@@ -62,7 +63,8 @@ class App extends Component {
       loginFormIsOpen: false,
       logged_in: false,
       username: null,
-      password: null
+      password: null,
+      in_thread: false
     }
     this.update = this.update.bind(this);
     this.submitComment = this.submitComment.bind(this);
@@ -75,6 +77,8 @@ class App extends Component {
     this.verifyLogin = this.verifyLogin.bind(this);
     this.storeLogin = this.storeLogin.bind(this);
     this.logout = this.logout.bind(this);
+    this.filterComments = this.filterComments.bind(this);
+    this.returnToMain = this.returnToMain.bind(this);
 
     this.api_url = "https://comments-4orum.herokuapp.com/api2/v1/"
 
@@ -86,6 +90,9 @@ class App extends Component {
   handleData(data) {
     this.setState({root_comments: [], replies: {}});
     if (data.comments) {
+      if (!this.state.all_comments) {
+        this.setState({all_comments: data.comments});
+      }
       // We have been given a list of comments for a post
       data.comments.map(comment => {
         if (comment.parent_id == null) {
@@ -139,6 +146,18 @@ class App extends Component {
         // done
       })
     }
+
+  /*Filters comments to only view children of the given id*/
+  filterComments(parent_id) {
+    this.setState({root_comments: null});
+    let new_root_comments = this.state.all_comments.filter(comment => comment.id==parent_id);
+    this.setState({root_comments: new_root_comments, in_thread: true})
+  }
+
+  returnToMain() {
+    this.setState({in_thread: false, root_comments: null, all_comments: null, replies: null});
+    this.update("post/"+this.state.post_id+"/");
+  }
   /*Submit a comment*/
   submitComment(data) {
     fetch('https://4orum.org/api2/v1/comment/', {
@@ -253,6 +272,8 @@ class App extends Component {
         <div className="pure-u-1">
         { this.state.replyingToID
           ?
+          <div>
+          <h3 className="pure-form-message">Replying to comment</h3>
           <Comment
             author={this.state.replyingToName}
             tag={this.state.replyingToSentiment}
@@ -261,6 +282,7 @@ class App extends Component {
             key={this.state.replyingToID}
             hideHeader={this.state.replyingToRoot}
           />
+          </div>
           :
           <div className="blank"/>
         }
@@ -284,11 +306,19 @@ class App extends Component {
         :
         <div class="pure-g">
         <div className="pure-u-1">
-        <Button
-          label={"New Comment"}
-          className="pure-button-primary nav-button"
-          onClick={()=>{this.openReplyForm(null)}}
-        />
+        {!this.state.in_thread
+          ? <Button
+            label={"New Comment"}
+            className={"pure-button-primary nav-button"}
+            onClick={()=>this.openReplyForm(null)}
+            />
+          : <Button
+            label={"< Return to Main Thread"}
+            className={"cancel-button nav-button"}
+            onClick={()=>this.returnToMain()}
+            />
+        }
+
         </div>
         <div className="pure-u-1">
         { this.state.root_comments
@@ -298,6 +328,7 @@ class App extends Component {
             depth={0}
             openReplyForm={this.openReplyForm}
             hideHeaders={true}
+            continueThread={this.filterComments}
             />
           : <img className="loading" src={logo}/>
         }
@@ -332,6 +363,7 @@ function CommentList(props) {
       depth={props.depth + 1}
       openReplyForm={props.openReplyForm}
       hideHeader={hideHeader}
+      continueThread={props.continueThread}
       />
   </li>
 );
@@ -358,12 +390,14 @@ class Comment extends Component {
               getReplies={this.props.getReplies}
               depth={this.props.depth}
               openReplyForm={this.props.openReplyForm}
+              continueThread={this.props.continueThread}
               />
           );
         } else {
           return (
             <div className="continue-thread">
             <Button
+              onClick={(event)=>this.props.continueThread(this.props.id)}
               label={"Continue this thread -->"}
               className={"continue-thread-button pure-button-primary"}
               />

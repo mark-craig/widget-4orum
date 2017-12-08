@@ -56,7 +56,7 @@ a.reference {
 }
 
 .continue-thread {
-  height: 1em;
+  height: 1.25em;
 }
 
 .continue-thread a {
@@ -132,7 +132,7 @@ ul {
 }
 
 .blank {
-  height:100%;
+  height: 1em;
 }
 
 .sentiment-message {
