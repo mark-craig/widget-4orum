@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import ReplyForm from './ReplyForm.js';
 import LoginForm from './LoginForm.js';
 import logo from './logo.png';
+import widgetStyles from './widget-styles.js'
 import { Markdown } from 'react-showdown';
 import 'whatwg-fetch'
+
+
 
 const sentiments = ["Awesome", "Funny", "Sympathetic", "Controversial",
   "Offensive", "False", "Confusing", "True"]
@@ -247,7 +250,7 @@ class App extends Component {
       <div className="App">
       <div className="pure-menu pure-menu-horizontal pure-menu-scrollable">
       <a href="https://4orum.org" className="pure-menu-heading pure-menu-link">
-        4<img className="logo" src={logo} alt="o"/>rum
+        4<img className={widgetStyles["logo"]} src={logo} alt="o"/>rum
       </a>
       {!this.state.logged_in
         ? <ul className="pure-menu-list">
@@ -283,7 +286,7 @@ class App extends Component {
         <Button
           label={"Cancel"}
           style={{backgroundColor:sentiments_colors[sentiments[4]]}}
-          className={"cancel-button nav-button"}
+          className={widgetStyles["cancel-button"] + " " + widgetStyles["nav-button"]}
           onClick={this.closeReplyForm}
         />
         </div>
@@ -302,7 +305,7 @@ class App extends Component {
           />
           </div>
           :
-          <div className="blank"/>
+          <div className={widgetStyles.blank}/>
         }
         </div>
         <div className="pure-u-1">
@@ -327,12 +330,12 @@ class App extends Component {
         {!this.state.in_thread
           ? <Button
             label={"New Comment"}
-            className={"pure-button-primary nav-button"}
+            className={"pure-button-primary " + widgetStyles['nav-button']}
             onClick={()=>this.openReplyForm(null)}
             />
           : <Button
             label={"< Return to Main Thread"}
-            className={"cancel-button nav-button"}
+            className={widgetStyles["cancel-button"] + " " + widgetStyles["nav-button"]}
             onClick={()=>this.returnToMain()}
             />
         }
@@ -348,7 +351,7 @@ class App extends Component {
             hideHeaders={!this.state.in_thread}
             continueThread={this.filterComments}
             />
-          : <img className="loading" src={logo}/>
+          : <img className={widgetStyles.loading} src={logo}/>
         }
         </div>
         </div>
@@ -413,11 +416,11 @@ class Comment extends Component {
           );
         } else {
           return (
-            <div className="continue-thread">
+            <div className={widgetStyles["continue-thread"]}>
             <Button
               onClick={(event)=>this.props.continueThread(this.props.id)}
               label={"Continue this thread -->"}
-              className={"continue-thread-button pure-button-primary"}
+              className={widgetStyles["continue-thread-button"] + " pure-button-primary"}
               />
             </div>
             )
@@ -429,29 +432,26 @@ class Comment extends Component {
 
   render() {
     return (
-        <div className="comment-group">
-        <div className="comment">
+        <div className={widgetStyles["comment-group"]}>
+        <div className={widgetStyles["comment"]}>
         {!this.props.hideHeader
-          ? <div className="comment-header"
+          ? <div className={widgetStyles["comment-header"]}
               style={{backgroundColor: sentiments_colors[sentiments[sentiments_tag.indexOf(this.props.tag)]]}}>
-              <h3> <strong>{this.props.author}</strong>:
+              {this.props.author} says: 
                   {" " + sentiments_expressions[sentiments[sentiments_tag.indexOf(this.props.tag)]]}
                   {sentiments[sentiments_tag.indexOf(this.props.tag)]}
-              </h3>
             </div>
-          : <div className="comment-header no-sentiment">
-              <h3>
-                <strong>{this.props.author}</strong> says:
-              </h3>
+          : <div className={widgetStyles["comment-header"] + " " + widgetStyles["no-sentiment"]}>
+              {this.props.author} says:
             </div>
         }
-        <div className="comment-body">
+        <div className={widgetStyles["comment-body"]}>
         <Markdown markup={this.props.text}/>
         </div>
-        <div className="comment-footer">
+        <div className={widgetStyles["comment-footer"]}>
         {this.props.openReplyForm
         ? <Button
-            className="larger-button"
+            className={widgetStyles["larger-button"]}
             onClick={()=>this.props.openReplyForm(this.props.id,
                                                   this.props.author,
                                                   this.props.tag,
@@ -460,7 +460,7 @@ class Comment extends Component {
           label={"Reply"}
         />
         :
-        <div className="blank"/>
+        <div className={widgetStyles["blank"]}/>
       }
         </div>
         </div>

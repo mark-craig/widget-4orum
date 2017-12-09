@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "chart.js": "^2.7.1",
+    "csjs-inject": "^1.0.1",
     "font-awesome": "^4.7.0",
     "react": "^16.0.0",
     "react-chartjs": "^0.8.0",

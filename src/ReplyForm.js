@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PieChart from 'react-chartjs-2';
 import ReactMde, { ReactMdeCommands } from 'react-mde';
+import widgetStyles from './widget-styles.js'
+
 
 
 class ReplyForm extends React.Component {
@@ -132,7 +134,7 @@ class ReplyForm extends React.Component {
     return (
       <form className="pure-form pure-g">
             {this.state.error_message
-              ? <div className="pure-u-1 alert-error">{this.state.error_message}</div>
+              ? <div className={"pure-u-1 " + widgetStyles["alert-error"]}>{this.state.error_message}</div>
               : <div/>
             }
             <div className="pure-u-1 pure-u-md-1-2">
@@ -141,7 +143,7 @@ class ReplyForm extends React.Component {
                 : <div/>
             }
             {this.props.parent_id
-              ? <span className="pure-form-message sentiment-message">
+              ? <span className={"pure-form-message " + widgetStyles["sentiment-message"]}>
                 <SentimentHeader
                   sentiment={this.state.sentiment}
                   sentiments_colors={this.props.sentiments_colors}
@@ -161,7 +163,7 @@ class ReplyForm extends React.Component {
                 onChange={this.handleTextChange}
                 commands={ReactMdeCommands.getDefaultCommands()}
                 />
-              <button onClick={this.handleSubmit} className="save pure-button pure-input-1">Submit comment</button>
+              <button onClick={this.handleSubmit} className="pure-button pure-input-1">Submit comment</button>
               </div>
             </form>
 

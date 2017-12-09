@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import Modal from 'react-modal';
 import PropTypes from 'prop-types';
-import logo from './logo.png'
-
+import logo from './logo.png';
+import widgetStyles from './widget-styles.js'
 
 class LoginForm extends React.Component {
   constructor(props) {
@@ -65,7 +65,7 @@ class LoginForm extends React.Component {
         isOpen={this.props.isOpen}
         style={modalStyle}
         >
-        <button className="pure-button cancel-button nav-button"
+        <button className={"pure-button " + widgetStyles["cancel-button"] + " " + widgetStyles["nav-button"]}
           onClick={(event)=>this.props.close()}>Close</button>
         <form className="pure-form pure-form-stacked" onSubmit={this.handleSubmit}>
           <legend>Sign in to 4orum
@@ -75,7 +75,7 @@ class LoginForm extends React.Component {
           </legend>
 
           { this.props.log_in_failed ?
-            <div className="alert-error">
+            <div className={widgetStyles["alert-error"]}>
               <label>Incorrect username or password</label>
             </div>
             : <div/>
@@ -86,7 +86,7 @@ class LoginForm extends React.Component {
               onChange={this.handlePasswordChange} required/>
           <button type="submit" className="pure-button pure-button-primary pure-input-1">Sign in</button>
         </form>
-        {this.state.attempting_login && !this.props.log_in_failed ? <img className="loading" src={logo}/> : <div className="blank"/>}
+        {this.state.attempting_login && !this.props.log_in_failed ? <img className={widgetStyles.loading} src={logo}/> : <div className={widgetStyles["blank"]}/>}
       </Modal>
     )
   }
