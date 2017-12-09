@@ -70,7 +70,7 @@ class LoginForm extends React.Component {
         <form className="pure-form pure-form-stacked" onSubmit={this.handleSubmit}>
           <legend>Sign in to 4orum
             <div className="pure-form-message">
-              <a target="_blank" href="http://4orum.org/signup" >Or create an account here!</a>
+              <a target="_blank" href="https://4orum.org/signup" >Or create an account here!</a>
             </div>
           </legend>
 
