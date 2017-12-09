@@ -1,21 +1,36 @@
 # widget-4orum
-A React and JQuery script that embeds an div of the [comments-4orum](https://github.com/gigibyte927/comments-4orum) Django app into a given page.
+An embeddable React single-page application that puts a [comments-4orum](https://github.com/gigibyte927/comments-4orum) thread on any website.
 
-# Usage: How to Embed a 4orum Comment on your Website
-In the html for a given page for production purposes, put the following two lines where you want your comment section to exist.
-First, add a *div* with id root.
+# How to embed a 4orum comment thread on your website
+## Step 1
+include this stylesheet in the <head> of your webpage (it should not interfere with your other styles):
 ```
-<div id="root"></div>
+<link rel="stylesheet" href="https://4orum.netlify.com/static/css/main.css">
 ```
+## Step 2
+In the html for a given page for production purposes, put the following <div> where you want your comment section to exist.
+```
+<div id="4orum"></div>
+```
+## Step 3
+Add this script near the bottom of your html file:
+```
+<script src="https://4orum.netlify.com/static/js/main.js"></script>
+```
+## Step 4
+There is no step 4. You're done!
+  
+# Development
+This project was created using the [create-react-app](https://github.com/facebookincubator/create-react-app) framework. The README for that repo contains all the necessary information for working with this project.
 
-Then add this script to the bottom of your html file:
+## Quick Start
+After cloning this repo, use the following commands to run the app locally.
 
+Install dependencies from package.json:
 ```
-<script src="https://cdn.rawgit.com/mark-craig/f06b4fbd5246888bf0b493ae38378f02/raw/572714ef1281d1b0bed2b1b5b2188ff25e807f8a/main.190b807f.js"></script>
+npm install
 ```
-
-Finally, include this stylesheet:
-
+Run in development mode on localhost:
 ```
-<link href="https://cdn.rawgit.com/mark-craig/ac87f8f778caf2bc4257e445714ff266/raw/636482f0ed0e5e2286db6b8081159f7c5c4a0296/main.f8f7393c.css" rel="stylesheet">
+npm start
 ```
