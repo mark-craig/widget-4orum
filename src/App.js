@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReplyForm from './ReplyForm.js';
 import LoginForm from './LoginForm.js';
-import logo from './4orum.svg';
+import logo from './logo.png';
 import { Markdown } from 'react-showdown';
 import 'whatwg-fetch'
 
