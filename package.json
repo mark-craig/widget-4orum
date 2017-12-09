@@ -1,5 +1,6 @@
 {
   "name": "widget-4orum",
+  "homepage": "https://4orum.netlify.com/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -13,13 +14,18 @@
     "react-modal": "^3.1.7",
     "react-scripts": "1.0.14",
     "react-showdown": "^1.6.0",
+    "renamer": "^0.6.1",
     "showdown": "^1.8.4",
     "whatwg-fetch": "^2.0.3"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && npm run build-rename && npm run include-headers",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build-rename": "npm run build-rename-js && npm run build-rename-css",
+    "build-rename-js": "renamer --regex --find 'main\\.[^\\.]+\\.js' --replace 'main.js' build/static/js/*.js",
+    "build-rename-css": "renamer --regex --find 'main\\.[^\\.]+\\.css' --replace 'main.css' build/static/css/*.css",
+    "include-headers": "cp _headers build"
   }
 }

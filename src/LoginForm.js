@@ -41,7 +41,8 @@ class LoginForm extends React.Component {
         left              : 0,
         right             : 0,
         bottom            : 0,
-        backgroundColor   : 'rgba(0, 0, 0, 0.5)'
+        backgroundColor   : 'rgba(0, 0, 0, 0.5)',
+        zIndex            : 2147483646 
       },
       content: {
         border: '0',
@@ -56,7 +57,7 @@ class LoginForm extends React.Component {
         transform: 'translate(-50%,-50%)',
         minWidth: '10rem',
         width: '80%',
-        maxWidth: '17.5rem'
+        maxWidth: '17.5rem',
       }
     }
     return (

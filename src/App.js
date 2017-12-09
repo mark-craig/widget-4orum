@@ -252,7 +252,7 @@ class App extends Component {
       {!this.state.logged_in
         ? <ul className="pure-menu-list">
             <li className="pure-menu-item">
-              <a href="#" onClick={(event)=>this.openLoginForm()}
+              <a href="#4orum" onClick={(event)=>this.openLoginForm()}
                 className="pure-menu-link">Login</a>
             </li>
           </ul>
@@ -260,7 +260,7 @@ class App extends Component {
           <ul className="pure-menu-list">
            <li className="pure-menu-item pure-menu-disabled">Logged in as {this.state.username}</li>
             <li className="pure-menu-item">
-              <a href="#" onClick={(event)=>this.logout()}
+              <a href="#4orum" onClick={(event)=>this.logout()}
                 className="pure-menu-link">Logout</a>
             </li>
           </ul>
