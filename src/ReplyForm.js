@@ -22,7 +22,8 @@ class ReplyForm extends React.Component {
       comment: {text: '', selection: null},
       sentiment: null,
       error_message: null,
-      attempting_login: false
+      attempting_login: false,
+      attempting_to_submit: false
     };
 
     this.handleTextChange = this.handleTextChange.bind(this);
@@ -35,28 +36,41 @@ class ReplyForm extends React.Component {
     this.setState({comment: value});
   }
 
+  componentDidUpdate() {
+    if (this.props.logged_in && this.state.attempting_to_submit) {
+      // Finish trying to send the comment
+      let dummy_event = {preventDefault: ()=>null}
+      this.handleSubmit(dummy_event);
+    }
+  }
+
   validateForm(data) {
     if (!data.post) {
       // not sure why this would be the case, but do not allow
-      this.setState({error_message: "An unknown error occurred. Please try again later."});
+      this.setState({error_message: "An unknown error occurred. Please try again later.",
+                      attempting_to_submit: false});
       return false;
     }
     if (!data.text) {
       // we need text in the comment
-      this.setState({error_message: "Please write a comment before submitting."});
+      this.setState({error_message: "Please write a comment before submitting.",
+                      attempting_to_submit: false});
       return false;
     } else if (data.text.trim() == "") {
       // we need text in the comment
-      this.setState({error_message: "Please write a comment before submitting."});
+      this.setState({error_message: "Please write a comment before submitting.",
+                      attempting_to_submit: false});
       return false;
     }
     if (data.parent_comment && !data.thoughts) {
       // we need a sentiment if there is a parent comment
-      this.setState({error_message: "Please choose a sentiment since you are replying to another comment"});
+      this.setState({error_message: "Please choose a sentiment since you are replying to another comment",
+                      attempting_to_submit: false});
       return false;
     }
     if (!this.props.logged_in) {
-      this.setState({error_message: "Please log in before submitting"});
+      this.setState({error_message: "Please log in before submitting",
+                      attempting_to_submit: true});
       this.props.openLoginForm();
       return false;
     }
