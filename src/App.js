@@ -5,7 +5,7 @@ import logo from './logo.png';
 import widgetStyles from './widget-styles.js'
 import { Markdown } from 'react-showdown';
 import 'whatwg-fetch'
-
+import Moment from 'moment';
 
 
 const sentiments = ["Awesome", "Funny", "Sympathetic", "Controversial",
@@ -385,6 +385,7 @@ function CommentList(props) {
       openReplyForm={props.openReplyForm}
       hideHeader={hideHeader}
       continueThread={props.continueThread}
+      timestamp={comment.created_date}
       />
   </li>
 );
@@ -429,20 +430,24 @@ class Comment extends Component {
       }
     }
 
-
   render() {
+      Moment.locale('en');
+    // var dt = '2016-05-02T00:00:00';
+    // return(<View> {Moment(dt).format('d MMM')} </View>)
+    var dt = this.props.timestamp;
+
     return (
         <div className={widgetStyles["comment-group"]}>
         <div className={widgetStyles["comment"]}>
         {!this.props.hideHeader
           ? <div className={widgetStyles["comment-header"]}
               style={{backgroundColor: sentiments_colors[sentiments[sentiments_tag.indexOf(this.props.tag)]]}}>
-              {this.props.author} says: 
+              {this.props.author} says:
                   {" " + sentiments_expressions[sentiments[sentiments_tag.indexOf(this.props.tag)]]}
                   {sentiments[sentiments_tag.indexOf(this.props.tag)]}
             </div>
           : <div className={widgetStyles["comment-header"] + " " + widgetStyles["no-sentiment"]}>
-              {this.props.author} says:
+              On {Moment(dt).format('MMM DD, YYYY hh:MM a')}, {this.props.author} says: 
             </div>
         }
         <div className={widgetStyles["comment-body"]}>
