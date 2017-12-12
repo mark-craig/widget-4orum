@@ -46,6 +46,12 @@ module.exports = csjs`
     text-align: right;
   }
 
+  .timestamp {
+    float:right;
+    padding-right:1em;
+    padding-top: 0.25em;
+  }
+
   .comment-group {
     outline-style: solid;
     outline-width: 0.1em;
